@@ -1,0 +1,30 @@
+# Project-specific
+*.pth
+out/
+
+# Core dump
+/core
+
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Python package artifacts
+*.egg-info/
+.eggs/
+
+# Temporary files
+*.swp
+*~
+
+# IDE configuration
+.vscode
+.idea
+
+# Training outputs
+lightning_logs/*
+wandb/*
+
+# OSX
+.DS_Store
