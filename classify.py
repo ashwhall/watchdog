@@ -24,12 +24,12 @@ transform = T.Compose([T.Resize(256),
 
 def load_image(path):
     img = Image.open(path)
-    return transform(img)
+    return transform(img).cuda()
 
 def classify(image):
     global model
     if model is None:
-        model = Classifier(pretrained=True)
+        model = Classifier(pretrained=True).cuda()
 
     preds = model(image)
     # Reduce to only dog classes
@@ -38,17 +38,18 @@ def classify(image):
     preds = preds.detach().cpu().numpy()
     preds = np.mean(preds, 0)
     top3 = preds.argsort()[-3:][::-1]
-    if any(i in filtered_desires for i in top3):
+    return any(i in filtered_desires for i in top3)
+
+if __name__ == '__main__':
+    path = 'images/test/1.jpg'
+    if len(sys.argv) > 1:
+        path = sys.argv[1]
+    img = load_image(path)
+    if classify(img):
         print('I WANT IT I WANT IT I WANT IT')
         print('I WANT IT I WANT IT I WANT IT')
         print('I WANT IT I WANT IT I WANT IT')
     else:
         print('Yuck!')
 
-if __name__ == '__main__':
-    path = 'images/1.jpg'
-    if len(sys.argv) > 1:
-        path = sys.argv[1]
-    img = load_image(path)
-    classify(img)
 
