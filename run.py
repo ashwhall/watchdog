@@ -25,11 +25,11 @@ def check_new_dogs():
     desired_urls = [url for url, desired in new_dogs.items() if desired]
 
     if desired_urls:
-        print('Found some dogs you might like!')
+        print('OOOOOOH DOGGY')
         for url in desired_urls:
             print(f'\t{url}')
 
-        wandb.alert(title='New dogs found!',
+        wandb.alert(title='**DOG ALERT**',
                     text='\n'.join(desired_urls),
                     level=wandb.AlertLevel.WARN,
                     wait_duration=datetime.timedelta(seconds=5))
@@ -42,5 +42,5 @@ if __name__ == '__main__':
 
     while True:
         check_new_dogs()
-        print(f'Check complete! Sleeping for {CHECK_INTERVAL_MINUTES} minutes...\n')
+        print(f'\nCHECK COMPLETE!\nSleeping for {CHECK_INTERVAL_MINUTES} minutes...\n')
         time.sleep(CHECK_INTERVAL_MINUTES * 60)
