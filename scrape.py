@@ -52,6 +52,7 @@ def scrape_generic(url):
     return dogs
 
 def scrape_dogshome():
+    print('Scraping dogshome.com... ', end='')
     dogs = dict()
     dogs.update(scrape_generic(
         'https://dogshome.com/dog-adoption/adopt-a-dog/?sex=&breed1=&age=&animalid=&Submit=Submit&resulttype=1'))
@@ -61,19 +62,27 @@ def scrape_dogshome():
         'https://dogshome.com/dog-adoption/adopt-a-dog/?age=&sex=&breed1=&resulttype=1&ShelterLocation=&Submit=Submit&pageno=3'))
     dogs.update(scrape_generic(
         'https://dogshome.com/dog-adoption/adopt-a-dog/?age=&sex=&breed1=&resulttype=1&ShelterLocation=&Submit=Submit&pageno=4'))
+    print('done.')
     return dogs
 
 def scrape_petrescue():
-    return scrape_generic('https://www.petrescue.com.au/listings/search/dogs?interstate=false&page=1&per_page=500&size%5B%5D=10&state_id%5B%5D=2')
+    print('Scraping www.petrescue.com.au... ', end='')
+    dogs = scrape_generic('https://www.petrescue.com.au/listings/search/dogs?interstate=false&page=1&per_page=500&size%5B%5D=10&state_id%5B%5D=2')
+    print('done.')
+    return dogs
 
 def scrape_adoptapet():
+    print('Scraping www.adoptapet.com.au... ', end='')
     # Dogs are loaded using Ajax - require Selenium to await loading
-    raise NotImplementedError()
+    print('Not yet implemented.')
+    return
     return scrape_generic('https://www.adoptapet.com.au/search?state=3&animalType=3%2C+500')
 
 def scrape_saveadog():
+    print('Scraping saveadog.org.au... ', end='')
     # Dogs are loaded using Ajax - require Selenium to await loading
-    raise NotImplementedError()
+    print('Not yet implemented.')
+    return
     dogs = dict()
     # dogs.update(scrape_generic('https://saveadog.org.au/animals-adoptions/dog/puppies/'))
     # dogs.update(scrape_generic('https://saveadog.org.au/animals-adoptions/dog/small-dogs/'))
@@ -82,10 +91,12 @@ def scrape_saveadog():
     return dogs
 
 def scrape_rspca():
+    print('Scraping rspcavic.org... ', end='')
     dogs = dict()
     for page in range(1):
         page = page + 1
         dogs.update(scrape_generic(f'https://rspcavic.org/adoption/Search/?animal=Dog&location=&keywords=&seed=9&page={page}'))
+    print('done.')
     return dogs
 
 def scrape_fb(url):
@@ -97,8 +108,8 @@ def scrape():
     dogs = dict()
     dogs.update(scrape_dogshome())
     dogs.update(scrape_petrescue())
-    # dogs.update(scrape_adoptapet())
-    # dogs.update(scrape_saveadog())
+    dogs.update(scrape_adoptapet())
+    dogs.update(scrape_saveadog())
     dogs.update(scrape_rspca())
     # dogs.update(scrape_fb('http://www.facebook.com/StartingOverDogRescue'))
     return dogs
