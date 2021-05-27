@@ -73,16 +73,18 @@ def scrape_petrescue():
 
 def scrape_adoptapet():
     print('Scraping www.adoptapet.com.au... ', end='')
+    dogs = dict()
     # Dogs are loaded using Ajax - require Selenium to await loading
     print('Not yet implemented.')
-    return
+    return dogs
     return scrape_generic('https://www.adoptapet.com.au/search?state=3&animalType=3%2C+500')
 
 def scrape_saveadog():
     print('Scraping saveadog.org.au... ', end='')
+    dogs = dict()
     # Dogs are loaded using Ajax - require Selenium to await loading
     print('Not yet implemented.')
-    return
+    return dogs
     dogs = dict()
     # dogs.update(scrape_generic('https://saveadog.org.au/animals-adoptions/dog/puppies/'))
     # dogs.update(scrape_generic('https://saveadog.org.au/animals-adoptions/dog/small-dogs/'))

@@ -6,6 +6,8 @@ import wandb
 
 checked_urls = set()
 
+CHECK_INTERVAL_MINUTES = 5
+
 def check_new_dogs():
     new_dogs = dict()
     print('SCRAPING DOGS')
@@ -40,5 +42,5 @@ if __name__ == '__main__':
 
     while True:
         check_new_dogs()
-        print('Check complete! Sleeping for a while...\n')
-        time.sleep(5 * 60)
+        print(f'Check complete! Sleeping for {CHECK_INTERVAL_MINUTES} minutes...\n')
+        time.sleep(CHECK_INTERVAL_MINUTES * 60)
