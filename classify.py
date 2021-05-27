@@ -38,6 +38,12 @@ def classify(image):
     preds = preds.detach().cpu().numpy()
     preds = np.mean(preds, 0)
     top3 = preds.argsort()[-3:][::-1]
+    # if any(i in filtered_desires for i in top3):
+    #     print("matched doggies:")
+    #     for i in top3:
+    #         if i in filtered_desires:
+    #             print(filtered_labels[i])
+
     return any(i in filtered_desires for i in top3)
 
 if __name__ == '__main__':

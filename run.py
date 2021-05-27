@@ -22,7 +22,7 @@ def check_new_dogs():
             img = classify.load_image(img_path)
             new_dogs[url] = classify.classify(img)
 
-    desired_urls = [url for url, desired in new_dogs.items()]
+    desired_urls = [url for url, desired in new_dogs.items() if desired]
 
     if desired_urls:
         print('Found some dogs you might like!')
