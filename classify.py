@@ -9,7 +9,7 @@ from torchvision import transforms as T
 from labels import LABELS, DESIRED
 
 FIRST_IDX = 151
-LAST_IDX = 256
+LAST_IDX = 285
 filtered_labels = []
 for i in range(FIRST_IDX, LAST_IDX + 1):
     filtered_labels.append(LABELS[i])

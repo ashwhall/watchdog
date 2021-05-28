@@ -6,7 +6,7 @@ import wandb
 
 checked_urls = set()
 
-CHECK_INTERVAL_MINUTES = 5
+CHECK_INTERVAL_MINUTES = 30
 
 def check_new_dogs():
     new_dogs = dict()
@@ -25,14 +25,16 @@ def check_new_dogs():
     desired_urls = [url for url, desired in new_dogs.items() if desired]
 
     if desired_urls:
-        print('OOOOOOH DOGGY')
+        print('WE GOT SOME OPTIONS!')
         for url in desired_urls:
             print(f'\t{url}')
-
-        wandb.alert(title='**DOG ALERT**',
-                    text='\n'.join(desired_urls),
+        msg = ''
+        for i, url in enumerate(desired_urls):
+            msg += f'{i + 1}: {url}\n'
+        wandb.alert(title='DOG ALERT',
+                    text=msg,
                     level=wandb.AlertLevel.WARN,
-                    wait_duration=datetime.timedelta(seconds=5))
+                    wait_duration=datetime.timedelta(seconds=20))
     checked_urls.update(list(new_dogs.keys()))
 
 
