@@ -26,8 +26,10 @@ def save_db():
 load_db()
 
 
-def already_scraped(url):
-    return url in dog_db
+def already_scraped(url, img_url):
+    url_exists = url in dog_db
+    img_url_exists = len([v for v in dog_db.values() if v['img_url'] == img_url])
+    return url_exists or img_url_exists
 
 
 def _fetch_image(url):
@@ -58,7 +60,7 @@ def get_image_filepath(url):
 
 
 def add(url, img_url):
-    if not already_scraped(url):
+    if not already_scraped(url, img_url):
         img_path = get_image_filepath(img_url)
         _save_image(img_url, img_path)
 
@@ -66,7 +68,8 @@ def add(url, img_url):
                            desired=None,
                            notified=False,
                            scrape_datetime=datetime.datetime.now(),
-                           predicted_classes=None)
+                           predicted_classes=None,
+                           img_url=img_url)
         save_db()
 
 

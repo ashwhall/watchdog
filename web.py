@@ -2,11 +2,13 @@ import dash
 import dash_html_components as html
 import os
 import database as db
+import logging
 
 app = dash.Dash(__name__, assets_folder=os.getcwd())
 
-# assume you have a "long-form" data frame
-# see https://plotly.com/python/px-arguments/ for more options
+log = logging.getLogger('werkzeug')
+log.setLevel(logging.ERROR)
+
 
 def generate_thumbnail(href, info):
     colour = '#cccccc'

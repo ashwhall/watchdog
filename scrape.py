@@ -48,6 +48,8 @@ def scrape_generic(url):
 
 def scrape_dogshome():
     print('Scraping dogshome.com... ', end='', flush=True)
+    start_count = db.count()
+
     scrape_generic(
         'https://dogshome.com/dog-adoption/adopt-a-dog/?sex=&breed1=&age=&animalid=&Submit=Submit&resulttype=1')
     scrape_generic(
@@ -56,17 +58,21 @@ def scrape_dogshome():
         'https://dogshome.com/dog-adoption/adopt-a-dog/?age=&sex=&breed1=&resulttype=1&ShelterLocation=&Submit=Submit&pageno=3')
     scrape_generic(
         'https://dogshome.com/dog-adoption/adopt-a-dog/?age=&sex=&breed1=&resulttype=1&ShelterLocation=&Submit=Submit&pageno=4')
-    print('done.', flush=True)
+    print(f'done - {db.count() - start_count} dogs scraped.', flush=True)
 
 
 def scrape_petrescue():
     print('Scraping www.petrescue.com.au... ', end='', flush=True)
+    start_count = db.count()
+
     scrape_generic('https://www.petrescue.com.au/listings/search/dogs?interstate=false&page=1&per_page=500&size%5B%5D=10&state_id%5B%5D=2')
-    print('done.', flush=True)
+    print(f'done - {db.count() - start_count} dogs scraped.', flush=True)
 
 
 def scrape_adoptapet():
     print('Scraping www.adoptapet.com.au... ', end='', flush=True)
+    start_count = db.count()
+
     # Dogs are loaded using Ajax - require Selenium to await loading
     print('Not yet implemented.', flush=True)
     # return scrape_generic('https://www.adoptapet.com.au/search?state=3&animalType=3%2C+500')
@@ -103,6 +109,7 @@ def retry_selenium(func, n_times=3):
 
 def scrape_saveadog():
     print('Scraping saveadog.org.au... ', end='', flush=True)
+    start_count = db.count()
 
     driver = webdriver.Chrome(executable_path='chromedriver_linux64/chromedriver')
 
@@ -122,11 +129,12 @@ def scrape_saveadog():
                 db.add(url=href, img_url=img_src)
 
     driver.quit()
-    print('done.', flush=True)
+    print(f'done - {db.count() - start_count} dogs scraped.', flush=True)
 
 
 def scrape_rspca():
     print('Scraping rspcavic.org... ', end='', flush=True)
+    start_count = db.count()
 
     driver = webdriver.Chrome(executable_path='chromedriver_linux64/chromedriver')
 
@@ -153,36 +161,45 @@ def scrape_rspca():
         page += 1
 
     driver.quit()
-    print('done.', flush=True)
+    print(f'done - {db.count() - start_count} dogs scraped.', flush=True)
 
 
 def facebook_login(driver):
-    email_input = selenium_get_with_wait(driver, lambda d: d.find_element_by_id('email'))
+    email_input = selenium_get_with_wait(driver, lambda d: d.find_element_by_id('m_login_email'))
     if email_input:
-        pass_input = selenium_get_with_wait(driver, lambda d: d.find_element_by_id('pass'))
+        pass_input = selenium_get_with_wait(driver, lambda d: d.find_element_by_id('m_login_password'))
         if pass_input:
-            submit_btn = selenium_get_with_wait(driver, lambda d: d.find_element_by_id('loginbutton'))
+            submit_btn = selenium_get_with_wait(driver, lambda d: d.find_element_by_class_name('_56bu'))
             if submit_btn:
-                print("LOGING INT")
                 email_input.send_keys(EMAIL)
                 pass_input.send_keys(PWD)
                 submit_btn.click()
 
 
-def scrape_fb(url):
-    def func():
-        return _scrape_fb(url)
-    return retry_selenium(func)
+def scrape_fb_group(group_id):
+    print(f'Scraping FB group {group_id}... ', end='', flush=True)
+    start_count = db.count()
+    scrape_fb_url(f'https://touch.facebook.com/groups/{group_id}')
+    print(f'done - {db.count() - start_count} dogs scraped.', flush=True)
+
+
+def scrape_fb_page(page_name):
+    print(f'Scraping FB page {page_name}... ', end='', flush=True)
+    start_count = db.count()
+    scrape_fb_url(f'https://touch.facebook.com/{page_name}/posts')
+    print(f'done - {db.count() - start_count} dogs scraped.', flush=True)
+
+
+def scrape_fb_url(url):
+    return retry_selenium(lambda: _scrape_fb(url))
 
 
 def _scrape_fb(url):
-    print(f'Scraping {url}... ', end='', flush=True)
-
     driver = webdriver.Chrome(executable_path='chromedriver_linux64/chromedriver')
 
     driver.get(url)
     facebook_login(driver)
-
+    selenium_get_with_wait(driver, lambda d: d.find_elements_by_class_name('_78cz'))
 
     driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
     time.sleep(1)
@@ -190,56 +207,67 @@ def _scrape_fb(url):
     time.sleep(1)
 
     link_divs = driver.find_elements_by_class_name('_78cz')
-    used_images = set()
+    # time.sleep(600)
+    # print(len(link_divs), 'divs found')
     for link_div in link_divs:
         href = img_src = None
 
         if links := link_div.find_elements_by_tag_name('a'):
             href = links[0].get_attribute('href')
-
+        # print('Got the href!', href)
         parent = link_div
         while parent.get_attribute('class') != 'story_body_container':
             parent = parent.find_element_by_xpath('..')
+        # print('parent:', parent)
         if parent:
             if images := parent.find_elements_by_class_name('_5sgi'):
                 img_src = images[0].get_attribute('src')
-        if href and img_src and img_src not in used_images:
+        # print('+++++++++++++++++++++')
+        if not img_src:
+            # print('this image:', len(parent.find_elements_by_class_name('_5sgi')))
+            for image in parent.find_elements_by_class_name('_5sgi'):
+                # print('That is an image!')
+                try:
+                    css_img_prop = image.value_of_css_property('background-image')
+                    img_src = css_img_prop[css_img_prop.index('"')+1:css_img_prop.rindex('"')]
+                    break
+                except:
+                    pass
+
+        # print('+++++++++++++++++++++')
+
+        # print('img:', img_src)
+        if href and img_src:
             db.add(url=href, img_url=img_src)
-            used_images.add(img_src)
 
     driver.quit()
-    print('done.', flush=True)
 
 
 def scrape():
-    functions = [
-        lambda: scrape_dogshome(),
-        lambda: scrape_petrescue(),
-        lambda: scrape_adoptapet(),
-        lambda: retry_selenium(scrape_saveadog),
-        lambda: retry_selenium(scrape_rspca),
-        lambda: scrape_fb('https://m.facebook.com/DogRescueAssociationofVictoria/posts/'),
-        lambda: scrape_fb('https://m.facebook.com/vicdogrescue/posts/'),
-        lambda: scrape_fb('https://m.facebook.com/StartingOverDogRescue/posts/'),
-        lambda: scrape_fb('https://m.facebook.com/All4PawsDogRescue/posts/'),
-        lambda: scrape_fb('https://m.facebook.com/groups/571800346240922/'),
-        lambda: scrape_fb('https://m.facebook.com/groups/611101722623366/'),
-        lambda: scrape_fb('https://m.facebook.com/SecondChanceAnimalRescueInc/posts/'),
-        lambda: scrape_fb('https://m.facebook.com/PuppyTalesRescue/posts/'),
-        lambda: scrape_fb('https://m.facebook.com/rescuedwithlove/posts/'),
-        lambda: scrape_fb('https://m.facebook.com/FFARLatrobe/posts/'),
-        lambda: scrape_fb('https://m.facebook.com/FFARau/posts/'),
-        lambda: scrape_fb('https://m.facebook.com/LostDogsHome/posts/'),
-        lambda: scrape_fb('https://m.facebook.com/PetRescueAU/posts/'),
-        lambda: scrape_fb('https://m.facebook.com/RSPCA.Victoria/posts/'),
-        lambda: scrape_fb('https://m.facebook.com/petshavenfoundation/posts/'),
-        lambda: scrape_fb('https://m.facebook.com/Australiank9rescuevic/posts/'),
-        lambda: scrape_fb('https://m.facebook.com/TheAnimalRehomingService/posts/'),
-        lambda: scrape_fb('https://m.facebook.com/melbourneanimalrescue/posts/'),
-        lambda: scrape_fb('https://m.facebook.com/newbeginnings.animalrescueinc/posts/'),
-    ]
-    for f in tqdm.tqdm(functions):
-        f()
+    scrape_dogshome()
+    scrape_petrescue()
+    scrape_adoptapet()
+    retry_selenium(scrape_saveadog)
+    retry_selenium(scrape_rspca)
+    scrape_fb_group('571800346240922')
+    scrape_fb_group('611101722623366')
+    scrape_fb_page('DogRescueAssociationofVictoria')
+    scrape_fb_page('vicdogrescue')
+    scrape_fb_page('StartingOverDogRescue')
+    scrape_fb_page('All4PawsDogRescue')
+    scrape_fb_page('SecondChanceAnimalRescueInc')
+    scrape_fb_page('PuppyTalesRescue')
+    scrape_fb_page('rescuedwithlove')
+    scrape_fb_page('FFARLatrobe')
+    scrape_fb_page('FFARau')
+    scrape_fb_page('LostDogsHome')
+    scrape_fb_page('PetRescueAU')
+    scrape_fb_page('RSPCA.Victoria')
+    scrape_fb_page('petshavenfoundation')
+    scrape_fb_page('Australiank9rescuevic')
+    scrape_fb_page('TheAnimalRehomingService')
+    scrape_fb_page('melbourneanimalrescue')
+    scrape_fb_page('newbeginnings.animalrescueinc')
 
 
 if __name__ == '__main__':

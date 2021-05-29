@@ -31,12 +31,19 @@ def classify_with_path(path):
     return classify(load_image(path))
 
 
-def _combine_preds(predictions):
+def _combine_preds_mean(predictions):
+    """Combine predictions by taking the mean probability over the batch"""
     preds = F.softmax(predictions, 1)
     return torch.mean(preds, 0)
 
+def _combine_preds_max(predictions):
+    """Combine preds by taking the max probability (pre-softmax) over the batch"""
+    predictions = torch.max(predictions, 0)[0]
+    predictions = F.softmax(predictions, 0)
+    return predictions
+
 def _is_dog_or_cat(predictions):
-    predictions = _combine_preds(predictions)
+    predictions = _combine_preds_mean(predictions)
 
     top3 = torch.topk(predictions, 3)[1].detach().cpu().numpy()
     top10 = torch.topk(predictions, 10)[1].detach().cpu().numpy()
@@ -52,7 +59,7 @@ def _process_preds(predictions):
         return False, classes
 
     predictions = predictions[:, FIRST_IDX:LAST_IDX + 1]
-    predictions = _combine_preds(predictions)
+    predictions = _combine_preds_max(predictions)
     top3 = torch.topk(predictions, 3)[1].detach().cpu().numpy()
     pred_labels = [filtered_labels[i] for i in top3]
     is_desired = any(i in filtered_desires for i in top3)
