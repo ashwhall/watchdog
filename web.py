@@ -64,11 +64,10 @@ def serve_layout():
             info=info
         ))
 
-
     return html.Div(children=[
         html.H1(children='WatchDog', style={'text-align': 'center'}),
         html.H2(children=f'{len(dogs)} Doggies! ({desired} desired)', style={'text-align': 'center'}),
-
+        html.Div(html.A(html.Button('Refresh'), href='/'), style={'text-align': 'center'}),
         html.Div(images_div,
                  style={
                      'display': 'flex',

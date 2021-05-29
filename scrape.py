@@ -20,6 +20,7 @@ from pyvirtualdisplay import Display
 display = Display(visible=False, size=(800, 600))
 display.start()
 
+
 def scrape_generic(url):
     resp = requests.get(url)
     if resp.ok:
@@ -44,6 +45,7 @@ def scrape_generic(url):
                             href = parent.attrs['href']
                             db.add(url=href, img_url=src)
 
+
 def scrape_dogshome():
     print('Scraping dogshome.com... ', end='', flush=True)
     scrape_generic(
@@ -56,10 +58,12 @@ def scrape_dogshome():
         'https://dogshome.com/dog-adoption/adopt-a-dog/?age=&sex=&breed1=&resulttype=1&ShelterLocation=&Submit=Submit&pageno=4')
     print('done.', flush=True)
 
+
 def scrape_petrescue():
     print('Scraping www.petrescue.com.au... ', end='', flush=True)
     scrape_generic('https://www.petrescue.com.au/listings/search/dogs?interstate=false&page=1&per_page=500&size%5B%5D=10&state_id%5B%5D=2')
     print('done.', flush=True)
+
 
 def scrape_adoptapet():
     print('Scraping www.adoptapet.com.au... ', end='', flush=True)
@@ -76,6 +80,7 @@ def selenium_get_with_wait(driver, lambdaa, timeout=3):
         pass
     return elements
 
+
 def selenium_try_click(element):
     try:
         element.click()
@@ -83,6 +88,7 @@ def selenium_try_click(element):
         pass
     except selenium.common.exceptions.ElementClickInterceptedException:
         pass
+
 
 def retry_selenium(func, n_times=3):
     attempt = 0
@@ -93,7 +99,6 @@ def retry_selenium(func, n_times=3):
             attempt += 1
     print(f'Failed after {n_times} attempts.')
     return {}
-
 
 
 def scrape_saveadog():
@@ -118,6 +123,7 @@ def scrape_saveadog():
 
     driver.quit()
     print('done.', flush=True)
+
 
 def scrape_rspca():
     print('Scraping rspcavic.org... ', end='', flush=True)
@@ -161,7 +167,6 @@ def facebook_login(driver):
                 email_input.send_keys(EMAIL)
                 pass_input.send_keys(PWD)
                 submit_btn.click()
-
 
 
 def scrape_fb(url):
