@@ -79,6 +79,11 @@ def set_desired(url, desired, pred_classes):
     save_db()
 
 
+def set_notified(url):
+    dog_db[url]['notified'] = True
+    save_db()
+
+
 def reload_database():
     load_db()
 

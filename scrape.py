@@ -221,7 +221,7 @@ def scrape():
         lambda: scrape_fb('https://m.facebook.com/DogRescueAssociationofVictoria/posts/'),
         lambda: scrape_fb('https://m.facebook.com/vicdogrescue/posts/'),
         lambda: scrape_fb('https://m.facebook.com/StartingOverDogRescue/posts/'),
-        lambda: _scrape_fb('https://m.facebook.com/All4PawsDogRescue/posts/'),
+        lambda: scrape_fb('https://m.facebook.com/All4PawsDogRescue/posts/'),
         lambda: scrape_fb('https://m.facebook.com/groups/571800346240922/'),
         lambda: scrape_fb('https://m.facebook.com/groups/611101722623366/'),
         lambda: scrape_fb('https://m.facebook.com/SecondChanceAnimalRescueInc/posts/'),

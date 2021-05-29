@@ -28,11 +28,12 @@ def check_new_dogs():
     if unnotified_keys:
         print('WE GOT SOME OPTIONS!')
         for i, url in enumerate(unnotified_keys):
-            print(f'\t{url}')
+            print(f'({i+1})\t{url}')
             wandb.alert(title=f'DOG ALERT {i+1}/{len(unnotified_keys)}',
                         text=url,
                         level=wandb.AlertLevel.WARN,
                         wait_duration=datetime.timedelta(seconds=0))
+            db.set_notified(url)
 
 
 if __name__ == '__main__':
