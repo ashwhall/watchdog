@@ -181,6 +181,7 @@ def _scrape_fb(url):
     time.sleep(1)
 
     link_divs = driver.find_elements_by_class_name('_78cz')
+    used_images = set()
     for link_div in link_divs:
         href = img_src = None
 
@@ -193,8 +194,9 @@ def _scrape_fb(url):
         if parent:
             if images := parent.find_elements_by_class_name('_5sgi'):
                 img_src = images[0].get_attribute('src')
-        if href and img_src:
+        if href and img_src and img_src not in used_images:
             db.add(url=href, img_url=img_src)
+            used_images.add(img_src)
 
     driver.quit()
     print('done.', flush=True)
