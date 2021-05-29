@@ -1,4 +1,4 @@
-import sys
+import datetime
 import numpy as np
 from PIL import Image
 import torch
@@ -7,6 +7,7 @@ from torchvision.models import resnext101_32x8d as Classifier
 from torchvision import transforms as T
 
 from labels import LABELS, DESIRED
+import database as db
 
 FIRST_IDX = 151
 LAST_IDX = 285
@@ -26,6 +27,9 @@ def load_image(path):
     img = Image.open(path)
     return transform(img).cuda()
 
+def classify_with_path(path):
+    return classify(load_image(path))
+
 def classify(image):
     global model
     if model is None:
@@ -38,24 +42,13 @@ def classify(image):
     preds = preds.detach().cpu().numpy()
     preds = np.mean(preds, 0)
     top3 = preds.argsort()[-3:][::-1]
-    # if any(i in filtered_desires for i in top3):
-    #     print("matched doggies:")
-    #     for i in top3:
-    #         if i in filtered_desires:
-    #             print(filtered_labels[i])
 
-    return any(i in filtered_desires for i in top3)
+    pred_classes = [filtered_labels[i] for i in top3]
+    return any(i in filtered_desires for i in top3), pred_classes
 
 if __name__ == '__main__':
-    path = 'images/test/1.jpg'
-    if len(sys.argv) > 1:
-        path = sys.argv[1]
-    img = load_image(path)
-    if classify(img):
-        print('I WANT IT I WANT IT I WANT IT')
-        print('I WANT IT I WANT IT I WANT IT')
-        print('I WANT IT I WANT IT I WANT IT')
-    else:
-        print('Yuck!')
+    for url, info in db.get_unclassified().items():
+        img_data = load_image(info['img'])
+        db.set_desired(url, classify(img_data))
 
 

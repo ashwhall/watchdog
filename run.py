@@ -2,45 +2,44 @@ import time
 import datetime
 import scrape
 import classify
+import web
 import wandb
+import tqdm
+from threading import Thread
 
-checked_urls = set()
+import database as db
+
 
 CHECK_INTERVAL_MINUTES = 30
 
 def check_new_dogs():
-    new_dogs = dict()
     print('SCRAPING DOGS')
-    dogs = scrape.scrape()
-    print(f'Found {len(dogs)} new dogs')
-    if len(dogs) == 0:
+    scrape.scrape()
+    unclassified = db.get_unclassified()
+    print(f'{len(unclassified)} dogs to classify')
+    if unclassified == 0:
         return
 
     print('\nCLASSIFYING DOGS')
-    for url, img_path in dogs.items():
-        if url not in checked_urls:
-            img = classify.load_image(img_path)
-            new_dogs[url] = classify.classify(img)
+    for url, info in tqdm.tqdm(unclassified.items()):
+        db.set_desired(url, *classify.classify_with_path(info['img']))
 
-    desired_urls = [url for url, desired in new_dogs.items() if desired]
-
-    if desired_urls:
+    unnotified_keys = list(db.get_unnotified().keys())
+    if unnotified_keys:
         print('WE GOT SOME OPTIONS!')
-        for url in desired_urls:
+        for i, url in enumerate(unnotified_keys):
             print(f'\t{url}')
-        msg = ''
-        for i, url in enumerate(desired_urls):
-            msg += f'{i + 1}: {url}\n'
-        wandb.alert(title='DOG ALERT',
-                    text=msg,
-                    level=wandb.AlertLevel.WARN,
-                    wait_duration=datetime.timedelta(seconds=20))
-    checked_urls.update(list(new_dogs.keys()))
+            wandb.alert(title=f'DOG ALERT {i+1}/{len(unnotified_keys)}',
+                        text=url,
+                        level=wandb.AlertLevel.WARN,
+                        wait_duration=datetime.timedelta(seconds=0))
 
 
 if __name__ == '__main__':
     wandb.login()
     wandb.init('WatchDog')
+    web_app_thread = Thread(target=web.app.run_server)
+    web_app_thread.start()
 
     while True:
         check_new_dogs()
