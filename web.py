@@ -55,6 +55,7 @@ def generate_thumbnail(href, info):
 def serve_layout():
     db.reload_database()
     dogs = db.get_records().items()
+    desired = len([href for href, info in dogs if info['desired']])
     dogs = list(reversed(sorted(dogs, key=lambda item: item[1]['scrape_datetime'])))
     images_div = []
     for href, info in dogs:
@@ -66,7 +67,7 @@ def serve_layout():
 
     return html.Div(children=[
         html.H1(children='WatchDog', style={'text-align': 'center'}),
-        html.H2(children=f'{len(dogs)} Doggies!', style={'text-align': 'center'}),
+        html.H2(children=f'{len(dogs)} Doggies! ({desired} desired)', style={'text-align': 'center'}),
 
         html.Div(images_div,
                  style={

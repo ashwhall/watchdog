@@ -30,25 +30,48 @@ def load_image(path):
 def classify_with_path(path):
     return classify(load_image(path))
 
+
+def _combine_preds(predictions):
+    preds = F.softmax(predictions, 1)
+    return torch.mean(preds, 0)
+
+def _is_dog_or_cat(predictions):
+    predictions = _combine_preds(predictions)
+
+    top3 = torch.topk(predictions, 3)[1].detach().cpu().numpy()
+    top10 = torch.topk(predictions, 10)[1].detach().cpu().numpy()
+    pred_labels = [LABELS[i] for i in top3]
+    for i in top10:
+        if FIRST_IDX <= i <= LAST_IDX:
+            return True, pred_labels
+    return False, pred_labels
+
+def _process_preds(predictions):
+    dog_or_cat, classes = _is_dog_or_cat(predictions)
+    if not dog_or_cat:
+        return False, classes
+
+    predictions = predictions[:, FIRST_IDX:LAST_IDX + 1]
+    predictions = _combine_preds(predictions)
+    top3 = torch.topk(predictions, 3)[1].detach().cpu().numpy()
+    pred_labels = [filtered_labels[i] for i in top3]
+    is_desired = any(i in filtered_desires for i in top3)
+    return is_desired, pred_labels
+
+
 def classify(image):
     global model
     if model is None:
         model = Classifier(pretrained=True).cuda()
 
     preds = model(image)
-    # Reduce to only dog classes
-    preds = preds[:, FIRST_IDX:LAST_IDX+1]
-    preds = F.softmax(preds, 1)
-    preds = preds.detach().cpu().numpy()
-    preds = np.mean(preds, 0)
-    top3 = preds.argsort()[-3:][::-1]
-
-    pred_classes = [filtered_labels[i] for i in top3]
-    return any(i in filtered_desires for i in top3), pred_classes
+    is_desired, pred_labels = _process_preds(preds)
+    return is_desired, pred_labels
 
 if __name__ == '__main__':
     for url, info in db.get_unclassified().items():
+        print(info['img'])
         img_data = load_image(info['img'])
-        db.set_desired(url, classify(img_data))
+        desired = classify(img_data)
 
 
