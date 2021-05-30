@@ -48,6 +48,7 @@ if __name__ == '__main__':
 
     while True:
         check_new_dogs(skip_first)
-        print(f'\nCHECK COMPLETE!\nSleeping for {CHECK_INTERVAL_MINUTES} minutes...\n')
+        print(f'\nCheck complete at {datetime.datetime.now()}')
+        print(f'\nSleeping for {CHECK_INTERVAL_MINUTES} minutes...\n')
         time.sleep(CHECK_INTERVAL_MINUTES * 60)
         skip_first = False
