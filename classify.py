@@ -17,9 +17,13 @@ for i in range(FIRST_IDX, LAST_IDX + 1):
 filtered_desires = [d - FIRST_IDX for d in DESIRED]
 
 model = None
+centre_crop_transform = T.Compose([T.Resize(224),
+                                   T.CenterCrop(224),
+                                   T.ToTensor()])
 five_crop_transform = T.Compose([T.Resize(256),
                                  T.FiveCrop(224),
                                  T.Lambda(lambda crops: torch.stack([T.ToTensor()(crop) for crop in crops]))])
+
 resize_transform = T.Compose([T.Resize((224, 224)),
                               T.ToTensor()])
 norm_transform = T.Normalize(mean=[0.485, 0.456, 0.406],
@@ -28,9 +32,13 @@ norm_transform = T.Normalize(mean=[0.485, 0.456, 0.406],
 
 def load_image(path):
     img = Image.open(path)
-    cropped = five_crop_transform(img).cuda()
+
+    cropped = centre_crop_transform(img).cuda()[None]
     resized = resize_transform(img).cuda()[None]
-    return norm_transform(torch.cat((cropped, resized), 0))
+    imgs = norm_transform(torch.cat((cropped, resized), 0))
+    flipped_imgs = torch.flip(imgs, (-1, ))
+    return torch.cat((imgs, flipped_imgs), 0)
+
 
 def classify_with_path(path):
     return classify(load_image(path))
