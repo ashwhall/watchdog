@@ -168,6 +168,10 @@ def _facebook_login(driver):
                 pass_input.send_keys(PWD)
                 submit_btn.click()
 
+    not_now_btn = selenium_get_with_wait(driver, lambda d: d.find_element_by_id('_56bw'))
+    if not_now_btn:
+        not_now_btn.click()
+
 
 def scrape_fb_group(driver, group_id):
     print(f'Scraping FB group {group_id}... ', end='', flush=True)
