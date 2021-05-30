@@ -3,6 +3,7 @@
 out/
 images/fetched
 images/database.json
+geckodriver.log
 
 # Core dump
 /core
