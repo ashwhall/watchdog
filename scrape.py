@@ -15,9 +15,9 @@ EMAIL = input('Email: ')
 PWD = getpass()
 
 # This enables headless chrome control so the window isn't opened and displayed
-from pyvirtualdisplay import Display
-display = Display(visible=False, size=(800, 600))
-display.start()
+# from pyvirtualdisplay import Display
+# display = Display(visible=False, size=(800, 600))
+# display.start()
 
 
 def scrape_generic(url):
