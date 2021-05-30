@@ -29,7 +29,7 @@ def generate_thumbnail(href, info):
                     'border-radius': '5px'
                 }
             )
-        ], href=href),
+        ], href=href, target='_blank'),
 
         html.Div([
             html.Div('Predicted Breeds', style={'font-weight': 'bold'}),
