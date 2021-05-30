@@ -26,7 +26,7 @@ def generate_thumbnail(href, info):
                     'height': '250px',
                     'object-fit': 'cover',
                     'flex': '1',
-                    'border-radius': '10px'
+                    'border-radius': '5px'
                 }
             )
         ], href=href),

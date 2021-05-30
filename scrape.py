@@ -10,16 +10,14 @@ import database as db
 from getpass import getpass
 
 
-EMAIL = 'drummer.ash@gmail.com'
-PWD = '582*guwnv@'
-# print('Enter Facebook credentials:')
-# EMAIL = input('Email: ')
-# PWD = getpass()
+print('Enter Facebook credentials:')
+EMAIL = input('Email: ')
+PWD = getpass()
 
 # This enables headless chrome control so the window isn't opened and displayed
-# from pyvirtualdisplay import Display
-# display = Display(visible=False, size=(800, 600))
-# display.start()
+from pyvirtualdisplay import Display
+display = Display(visible=False, size=(800, 600))
+display.start()
 
 
 def scrape_generic(url):
@@ -97,22 +95,20 @@ def selenium_try_click(element):
         pass
 
 
-def retry_selenium(func, n_times=3):
+def retry_selenium(driver, func, n_times=3):
     attempt = 0
     while attempt < n_times:
         try:
-            return func()
+            return func(driver)
         except:
             attempt += 1
     print(f'Failed after {n_times} attempts.')
     return {}
 
 
-def scrape_saveadog():
+def scrape_saveadog(driver):
     print('Scraping saveadog.org.au... ', end='', flush=True)
     start_count = db.count()
-
-    driver = webdriver.Chrome(executable_path='chromedriver_linux64/chromedriver')
 
     for category in ('small-dogs', 'puppies'):
         driver.get(f'https://saveadog.org.au/animals-adoptions/dog/{category}')
@@ -129,15 +125,12 @@ def scrape_saveadog():
             if img_src:
                 db.add(url=href, img_url=img_src)
 
-    driver.quit()
     print(f'done - {db.count() - start_count} dogs scraped.', flush=True)
 
 
-def scrape_rspca():
+def scrape_rspca(driver):
     print('Scraping rspcavic.org... ', end='', flush=True)
     start_count = db.count()
-
-    driver = webdriver.Chrome(executable_path='chromedriver_linux64/chromedriver')
 
     page = 1
     while True:
@@ -161,11 +154,10 @@ def scrape_rspca():
                 #             dogs[href] = filepath
         page += 1
 
-    driver.quit()
     print(f'done - {db.count() - start_count} dogs scraped.', flush=True)
 
 
-def facebook_login(driver):
+def _facebook_login(driver):
     email_input = selenium_get_with_wait(driver, lambda d: d.find_element_by_id('m_login_email'))
     if email_input:
         pass_input = selenium_get_with_wait(driver, lambda d: d.find_element_by_id('m_login_password'))
@@ -177,29 +169,31 @@ def facebook_login(driver):
                 submit_btn.click()
 
 
-def scrape_fb_group(group_id):
+def scrape_fb_group(driver, group_id):
     print(f'Scraping FB group {group_id}... ', end='', flush=True)
     start_count = db.count()
-    scrape_fb_url(f'https://touch.facebook.com/groups/{group_id}')
+    scrape_fb_url(driver, f'https://touch.facebook.com/groups/{group_id}')
     print(f'done - {db.count() - start_count} dogs scraped.', flush=True)
 
 
-def scrape_fb_page(page_name):
+def scrape_fb_page(driver, page_name):
     print(f'Scraping FB page {page_name}... ', end='', flush=True)
     start_count = db.count()
-    scrape_fb_url(f'https://touch.facebook.com/{page_name}/posts')
+    scrape_fb_url(driver, f'https://touch.facebook.com/{page_name}/posts')
     print(f'done - {db.count() - start_count} dogs scraped.', flush=True)
 
 
-def scrape_fb_url(url):
-    return retry_selenium(lambda: _scrape_fb(url))
+def fb_login(driver):
+    driver.get('https://touch.facebook.com')
+    _facebook_login(driver)
 
 
-def _scrape_fb(url):
-    driver = webdriver.Chrome(executable_path='chromedriver_linux64/chromedriver')
+def scrape_fb_url(driver, url):
+    return retry_selenium(driver, lambda d: _scrape_fb(d, url))
 
+
+def _scrape_fb(driver, url):
     driver.get(url)
-    facebook_login(driver)
     selenium_get_with_wait(driver, lambda d: d.find_elements_by_class_name('_78cz'))
 
     driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
@@ -241,35 +235,38 @@ def _scrape_fb(url):
         if href and img_src:
             db.add(url=href, img_url=img_src)
 
-    driver.quit()
-
 
 def scrape():
+    driver = webdriver.Chrome(executable_path='chromedriver_linux64/chromedriver')
+
     scrape_dogshome()
     scrape_petrescue()
     scrape_adoptapet()
-    retry_selenium(scrape_saveadog)
-    retry_selenium(scrape_rspca)
-    scrape_fb_group('571800346240922')
-    scrape_fb_group('611101722623366')
-    scrape_fb_page('DogRescueAssociationofVictoria')
-    scrape_fb_page('vicdogrescue')
-    scrape_fb_page('StartingOverDogRescue')
-    scrape_fb_page('All4PawsDogRescue')
-    scrape_fb_page('SecondChanceAnimalRescueInc')
-    scrape_fb_page('PuppyTalesRescue')
-    scrape_fb_page('rescuedwithlove')
-    scrape_fb_page('FFARLatrobe')
-    scrape_fb_page('FFARau')
-    scrape_fb_page('LostDogsHome')
-    scrape_fb_page('PetRescueAU')
-    scrape_fb_page('RSPCA.Victoria')
-    scrape_fb_page('petshavenfoundation')
-    scrape_fb_page('Australiank9rescuevic')
-    scrape_fb_page('TheAnimalRehomingService')
-    scrape_fb_page('melbourneanimalrescue')
-    scrape_fb_page('newbeginnings.animalrescueinc')
+    retry_selenium(driver, scrape_saveadog)
+    retry_selenium(driver, scrape_rspca)
 
+    fb_login(driver)
+    scrape_fb_group(driver, '571800346240922')
+    scrape_fb_group(driver, '611101722623366')
+    scrape_fb_page(driver, 'DogRescueAssociationofVictoria')
+    scrape_fb_page(driver, 'vicdogrescue')
+    scrape_fb_page(driver, 'StartingOverDogRescue')
+    scrape_fb_page(driver, 'All4PawsDogRescue')
+    scrape_fb_page(driver, 'SecondChanceAnimalRescueInc')
+    scrape_fb_page(driver, 'PuppyTalesRescue')
+    scrape_fb_page(driver, 'rescuedwithlove')
+    scrape_fb_page(driver, 'FFARLatrobe')
+    scrape_fb_page(driver, 'FFARau')
+    scrape_fb_page(driver, 'LostDogsHome')
+    scrape_fb_page(driver, 'PetRescueAU')
+    scrape_fb_page(driver, 'RSPCA.Victoria')
+    scrape_fb_page(driver, 'petshavenfoundation')
+    scrape_fb_page(driver, 'Australiank9rescuevic')
+    scrape_fb_page(driver, 'TheAnimalRehomingService')
+    scrape_fb_page(driver, 'melbourneanimalrescue')
+    scrape_fb_page(driver, 'newbeginnings.animalrescueinc')
+
+    driver.quit()
 
 if __name__ == '__main__':
     scrape()
