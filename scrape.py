@@ -9,16 +9,17 @@ from selenium.webdriver.support.ui import WebDriverWait
 import database as db
 from getpass import getpass
 
-import tqdm
 
-print('Enter Facebook credentials:')
-EMAIL = input('Email: ')
-PWD = getpass()
+EMAIL = 'drummer.ash@gmail.com'
+PWD = '582*guwnv@'
+# print('Enter Facebook credentials:')
+# EMAIL = input('Email: ')
+# PWD = getpass()
 
-# This enables headless chrome control, so the window isn't opened and displayed
-from pyvirtualdisplay import Display
-display = Display(visible=False, size=(800, 600))
-display.start()
+# This enables headless chrome control so the window isn't opened and displayed
+# from pyvirtualdisplay import Display
+# display = Display(visible=False, size=(800, 600))
+# display.start()
 
 
 def scrape_generic(url):

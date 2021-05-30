@@ -6,18 +6,21 @@ import web
 import wandb
 import tqdm
 from threading import Thread
+import sys
 
 import database as db
 
 
-CHECK_INTERVAL_MINUTES = 30
+CHECK_INTERVAL_MINUTES = 60
 
-def check_new_dogs():
-    print('SCRAPING DOGS')
-    scrape.scrape()
+def check_new_dogs(skip_scraping=False):
+    if not skip_scraping:
+        print('SCRAPING DOGS')
+        scrape.scrape()
+
     unclassified = db.get_unclassified()
     print(f'{len(unclassified)} dogs to classify')
-    if unclassified == 0:
+    if len(unclassified) == 0:
         return
 
     print('\nCLASSIFYING DOGS')
@@ -37,12 +40,15 @@ def check_new_dogs():
 
 
 if __name__ == '__main__':
+    skip_first = '--skip-first-scrape' in sys.argv
+
     wandb.login()
     wandb.init('WatchDog')
     web_app_thread = Thread(target=web.app.run_server)
     web_app_thread.start()
 
     while True:
-        check_new_dogs()
+        check_new_dogs(skip_first)
         print(f'\nCHECK COMPLETE!\nSleeping for {CHECK_INTERVAL_MINUTES} minutes...\n')
         time.sleep(CHECK_INTERVAL_MINUTES * 60)
+        skip_first = False
