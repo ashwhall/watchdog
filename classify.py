@@ -17,15 +17,20 @@ for i in range(FIRST_IDX, LAST_IDX + 1):
 filtered_desires = [d - FIRST_IDX for d in DESIRED]
 
 model = None
-transform = T.Compose([T.Resize(256),
-                       T.FiveCrop(224),
-                       T.Lambda(lambda crops: torch.stack([T.ToTensor()(crop) for crop in crops])),
-                       T.Normalize(mean=[0.485, 0.456, 0.406],
-                                   std=[0.229, 0.224, 0.225])])
+five_crop_transform = T.Compose([T.Resize(256),
+                                 T.FiveCrop(224),
+                                 T.Lambda(lambda crops: torch.stack([T.ToTensor()(crop) for crop in crops]))])
+resize_transform = T.Compose([T.Resize((224, 224)),
+                              T.ToTensor()])
+norm_transform = T.Normalize(mean=[0.485, 0.456, 0.406],
+                             std=[0.229, 0.224, 0.225])
+
 
 def load_image(path):
     img = Image.open(path)
-    return transform(img).cuda()
+    cropped = five_crop_transform(img).cuda()
+    resized = resize_transform(img).cuda()[None]
+    return norm_transform(torch.cat((cropped, resized), 0))
 
 def classify_with_path(path):
     return classify(load_image(path))
@@ -59,7 +64,7 @@ def _process_preds(predictions):
         return False, classes
 
     predictions = predictions[:, FIRST_IDX:LAST_IDX + 1]
-    predictions = _combine_preds_max(predictions)
+    predictions = _combine_preds_mean(predictions)
     top3 = torch.topk(predictions, 3)[1].detach().cpu().numpy()
     pred_labels = [filtered_labels[i] for i in top3]
     is_desired = any(i in filtered_desires for i in top3)
@@ -80,5 +85,3 @@ if __name__ == '__main__':
         print(info['img'])
         img_data = load_image(info['img'])
         desired = classify(img_data)
-
-

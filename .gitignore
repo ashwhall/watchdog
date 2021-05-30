@@ -2,6 +2,7 @@
 *.pth
 out/
 images/fetched
+images/database.json
 
 # Core dump
 /core
