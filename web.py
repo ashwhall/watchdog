@@ -82,5 +82,8 @@ def serve_layout():
 app.layout = serve_layout
 app.title = "WatchDog"
 
+def run(debug=False):
+    app.run_server(host='0.0.0.0', debug=debug)
+
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    run(debug=True)

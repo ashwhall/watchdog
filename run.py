@@ -45,7 +45,7 @@ if __name__ == '__main__':
 
     wandb.login()
     wandb.init('WatchDog')
-    web_app_thread = Thread(target=web.app.run_server)
+    web_app_thread = Thread(target=web.run)
     web_app_thread.start()
 
     while True:
