@@ -265,15 +265,9 @@ def scrape():
     scrape_fb_page(driver, 'TheAnimalRehomingService')
     scrape_fb_page(driver, 'melbourneanimalrescue')
     scrape_fb_page(driver, 'newbeginnings.animalrescueinc')
+    scrape_fb_page(driver, 'Australiank9rescuevic')
 
     driver.quit()
 
 if __name__ == '__main__':
     scrape()
-    # dogs = scrape_saveadog()
-    # dogs = scrape_rspca()
-    # dogs = scrape_fb('https://www.facebook.com/pg/StartingOverDogRescue/posts')
-    # dogs = scrape_fb('https://www.facebook.com/pg/DogRescueAssociationofVictoria/posts/')
-    # print('Dogs found:', flush=True)
-    # for k, v in db.get_records().items():
-    #     print(k, v, flush=True)
