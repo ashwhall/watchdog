@@ -21,16 +21,14 @@ def check_new_dogs(skip_scraping=False):
 
     unclassified = db.get_unclassified()
     print(f'{len(unclassified)} dogs to classify')
-    if len(unclassified) == 0:
-        return
-
-    print('\nCLASSIFYING DOGS')
-    for url, info in tqdm.tqdm(unclassified.items()):
-        db.set_desired(url, *classify.classify_with_path(info['img']))
+    if unclassified:
+        print('\nCLASSIFYING DOGS')
+        for url, info in tqdm.tqdm(unclassified.items()):
+            db.set_desired(url, *classify.classify_with_path(info['img']))
 
     unnotified_keys = list(db.get_unnotified().keys())
     if unnotified_keys:
-        print('WE GOT SOME OPTIONS!')
+        print('NEW NOTIFICATIONS!')
         for i, url in enumerate(unnotified_keys):
             print(f'({i+1})\t{url}')
             wandb.alert(title=f'DOG ALERT {i+1}/{len(unnotified_keys)}',
