@@ -50,13 +50,27 @@ def _combine_preds_max(predictions):
 def _is_dog_or_cat(predictions):
     predictions = _combine_preds_mean(predictions)
 
-    top3 = torch.topk(predictions, 3)[1].detach().cpu().numpy()
-    top10 = torch.topk(predictions, 10)[1].detach().cpu().numpy()
-    pred_labels = [LABELS[i] for i in top3]
-    for i in top10:
+    top_n_3 = top_n_probs(predictions, 3)
+    top_n_10 = top_n_probs(predictions, 10)
+    pred_labels = [LABELS[i] for i in top_n_3]
+    for i in top_n_10:
         if FIRST_IDX <= i <= LAST_IDX:
             return True, pred_labels
     return False, pred_labels
+
+
+def top_n_probs(predictions, k):
+    """Get the top k, then remove all that are less than .75x as high probability as the most probable"""
+    # Get the top k
+    topk_probs, topk_indices = torch.topk(predictions, k)
+
+    # Filter the top three to be only those that are at least .75x as likely as top1
+    top_n_indices = []
+    for prob, idx in zip(topk_probs, topk_indices):
+        if prob / topk_probs[0] >= 0.75:
+            top_n_indices.append(int(idx.detach().cpu().numpy()))
+    return top_n_indices
+
 
 def _process_preds(predictions):
     dog_or_cat, classes = _is_dog_or_cat(predictions)
@@ -65,9 +79,11 @@ def _process_preds(predictions):
 
     predictions = predictions[:, FIRST_IDX:LAST_IDX + 1]
     predictions = _combine_preds_mean(predictions)
-    top3 = torch.topk(predictions, 3)[1].detach().cpu().numpy()
-    pred_labels = [filtered_labels[i] for i in top3]
-    is_desired = any(i in filtered_desires for i in top3)
+
+    top_n_3 = top_n_probs(predictions, 3)
+
+    pred_labels = [filtered_labels[i] for i in top_n_3]
+    is_desired = any(i in filtered_desires for i in top_n_3)
     return is_desired, pred_labels
 
 

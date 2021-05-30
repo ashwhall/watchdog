@@ -1,5 +1,4 @@
 import time
-import datetime
 import scrape
 import classify
 import web

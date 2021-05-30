@@ -51,6 +51,7 @@ def generate_thumbnail(href, info):
         'background-color': colour,
         'margin': '10px',
         'border-radius': '5px',
+        'min-height': '365px',
     })
 
 
