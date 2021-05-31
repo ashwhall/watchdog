@@ -31,7 +31,7 @@ norm_transform = T.Normalize(mean=[0.485, 0.456, 0.406],
 
 
 def load_image(path):
-    img = Image.open(path)
+    img = Image.open(path).convert('RGB')
 
     cropped = centre_crop_transform(img).cuda()[None]
     resized = resize_transform(img).cuda()[None]
