@@ -236,6 +236,20 @@ def scrape_fb_url(driver, url):
     return retry_selenium(driver, lambda d: _scrape_fb(d, url))
 
 
+def get_img_src(img):
+    img_src = None
+    try:
+        img_src = img.get_attribute('src')
+    except:
+        pass
+    try:
+        css_img_prop = img.value_of_css_property('background-image')
+        img_src = css_img_prop[css_img_prop.index('"') + 1:css_img_prop.rindex('"')]
+    except:
+        pass
+    return img_src
+
+
 def _scrape_fb(driver, url):
     driver.get(url)
     selenium_get_with_wait(driver, lambda d: d.find_elements_by_class_name('_78cz'))
@@ -246,36 +260,24 @@ def _scrape_fb(driver, url):
     time.sleep(1)
 
     link_divs = driver.find_elements_by_class_name('_78cz')
-    # time.sleep(600)
-    # print(len(link_divs), 'divs found')
+
     for link_div in link_divs:
         href = img_src = None
 
         if links := link_div.find_elements_by_tag_name('a'):
             href = links[0].get_attribute('href')
-        # print('Got the href!', href)
+
         parent = link_div
         while parent.get_attribute('class') != 'story_body_container':
             parent = parent.find_element_by_xpath('..')
-        # print('parent:', parent)
+
         if parent:
-            if images := parent.find_elements_by_class_name('_5sgi'):
-                img_src = images[0].get_attribute('src')
-        # print('+++++++++++++++++++++')
-        if not img_src:
-            # print('this image:', len(parent.find_elements_by_class_name('_5sgi')))
-            for image in parent.find_elements_by_class_name('_5sgi'):
-                # print('That is an image!')
-                try:
-                    css_img_prop = image.value_of_css_property('background-image')
-                    img_src = css_img_prop[css_img_prop.index('"')+1:css_img_prop.rindex('"')]
+            for img_class in ['_5sgi', '_2sxw', 'datstx6m']:
+                for image in parent.find_elements_by_class_name(img_class):
+                    img_src = get_img_src(image)
+                if img_src:
                     break
-                except:
-                    pass
 
-        # print('+++++++++++++++++++++')
-
-        # print('img:', img_src)
         if href and img_src:
             db.add(url=href, img_url=img_src)
 
