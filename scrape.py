@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 import os
 from urllib.parse import urlparse
 from selenium import webdriver
-from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support.ui import WebDriverWait, Select
 import database as db
 from getpass import getpass
 
@@ -68,13 +68,58 @@ def scrape_petrescue():
     print(f'done - {db.count() - start_count} dogs scraped.', flush=True)
 
 
-def scrape_adoptapet():
+def scrape_adoptapet(driver):
     print('Scraping www.adoptapet.com.au... ', end='', flush=True)
     start_count = db.count()
 
-    # Dogs are loaded using Ajax - require Selenium to await loading
-    print('Not yet implemented.', flush=True)
-    # return scrape_generic('https://www.adoptapet.com.au/search?state=3&animalType=3%2C+500')
+    driver.get('https://www.adoptapet.com.au/')
+
+    # Close the covid info popup
+    modal = selenium_get_with_wait(driver, lambda d: d.find_element_by_class_name('tingle-modal--visible'))
+    if modal:
+        close_btn = selenium_get_with_wait(driver, lambda d: d.find_element_by_class_name('tingle-btn--primary'))
+        if close_btn:
+            close_btn.click()
+
+    advanced_search_btn = selenium_get_with_wait(driver, lambda d: d.find_element_by_class_name('advanced-search'))
+    if advanced_search_btn:
+        advanced_search_btn.click()
+
+    # Form details
+    anim_type_select = selenium_get_with_wait(driver, lambda d: d.find_element_by_id('animal-type'))
+    if anim_type_select:
+        Select(anim_type_select).select_by_value('custom-mapping-1') # Dog and puppy
+
+    state_select = selenium_get_with_wait(driver, lambda d: d.find_element_by_id('state'))
+    if state_select:
+        Select(state_select).select_by_value('3') # Victoria
+
+    # Submission
+    time.sleep(2)
+    search_btn = selenium_get_with_wait(driver, lambda d: d.find_element_by_xpath('//*[@id="search-button-bott"]/button'))
+    if search_btn:
+        search_btn.click()
+
+    # Account for multiple pages
+    more_pets = True
+    while more_pets:
+        time.sleep(1)
+        for pet in selenium_get_with_wait(driver, lambda d: d.find_elements_by_class_name('pet')):
+            href = img_src = None
+            link = pet.find_element_by_tag_name('a')
+            if link:
+                href = link.get_attribute('href')
+            img = pet.find_element_by_tag_name('img')
+            if img:
+                img_src = img.get_attribute('src')
+            if href and img_src:
+                db.add(url=href, img_url=img_src)
+        if search_btn := selenium_get_with_wait(driver, lambda d: d.find_element_by_xpath('//*[@id="go-to-search-page"]/div/div/a')):
+            search_btn.click()
+        else:
+            more_pets = False
+
+    print(f'done - {db.count() - start_count} dogs scraped.', flush=True)
 
 
 def selenium_get_with_wait(driver, lambdaa, timeout=3):
@@ -245,7 +290,7 @@ def scrape():
 
     scrape_dogshome()
     scrape_petrescue()
-    scrape_adoptapet()
+    retry_selenium(driver, scrape_adoptapet)
     retry_selenium(driver, scrape_saveadog)
     retry_selenium(driver, scrape_rspca)
 
