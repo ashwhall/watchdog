@@ -14,10 +14,10 @@ import database as db
 CHECK_INTERVAL_MINUTES = 30
 
 
-def check_new_dogs(skip_scraping=False):
+def check_new_dogs(skip_scraping=False, headless=False):
     if not skip_scraping:
         print('SCRAPING DOGS')
-        scrape.scrape()
+        scrape.scrape(headless=headless)
 
     unclassified = db.get_unclassified()
     print(f'{len(unclassified)} dogs to classify')
@@ -40,6 +40,7 @@ def check_new_dogs(skip_scraping=False):
 
 if __name__ == '__main__':
     skip_first = '--skip-first-scrape' in sys.argv
+    headless = '--headless' in sys.argv
 
     wandb.login()
     wandb.init('WatchDog')
@@ -47,7 +48,7 @@ if __name__ == '__main__':
     web_app_thread.start()
 
     while True:
-        check_new_dogs(skip_first)
+        check_new_dogs(skip_scraping=skip_first, headless=headless)
         print(f'\nCheck complete at {datetime.datetime.now()}')
         print(f'Sleeping for {CHECK_INTERVAL_MINUTES} minutes...\n')
         time.sleep(CHECK_INTERVAL_MINUTES * 60)

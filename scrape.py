@@ -14,11 +14,6 @@ print('Enter Facebook credentials:')
 EMAIL = input('Email: ')
 PWD = getpass()
 
-# This enables headless chrome control so the window isn't opened and displayed
-# from pyvirtualdisplay import Display
-# display = Display(visible=False, size=(800, 600))
-# display.start()
-
 
 def scrape_generic(url):
     resp = requests.get(url)
@@ -285,7 +280,13 @@ def _scrape_fb(driver, url):
             db.add(url=href, img_url=img_src)
 
 
-def scrape():
+def scrape(headless=False):
+    # This enables headless Chrome control so the window isn't opened and displayed
+    if headless:
+        from pyvirtualdisplay import Display
+        display = Display(visible=False, size=(800, 600))
+        display.start()
+
     driver = webdriver.Chrome(executable_path='chromedriver_linux64/chromedriver')
 
     scrape_dogshome()
