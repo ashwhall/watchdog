@@ -238,6 +238,8 @@ def scrape_fb_url(driver, url):
 
 def get_img_src(img):
     img_src = None
+    if img.find_element_by_xpath('..').tag_name == 'span':
+        return None
     try:
         img_src = img.get_attribute('src')
     except:
@@ -265,7 +267,7 @@ def _scrape_fb(driver, url):
         href = img_src = None
 
         if links := link_div.find_elements_by_tag_name('a'):
-            href = links[0].get_attribute('href')
+            href = links[0].get_attribute('href').replace('m.facebook', 'facebook').replace('touch.facebook', 'facebook')
 
         parent = link_div
         while parent.get_attribute('class') != 'story_body_container':
