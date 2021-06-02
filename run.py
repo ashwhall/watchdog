@@ -11,7 +11,7 @@ import sys
 import database as db
 
 
-CHECK_INTERVAL_MINUTES = 30
+CHECK_INTERVAL_MINUTES = 15
 
 
 def check_new_dogs(skip_scraping=False, headless=False):
