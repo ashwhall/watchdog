@@ -10,9 +10,14 @@ import database as db
 from getpass import getpass
 
 
-print('Enter Facebook credentials:')
-EMAIL = input('Email: ')
-PWD = getpass()
+EMAIL = PWD = None
+
+
+def set_login_credentials():
+    global EMAIL, PWD
+    print('Enter Facebook credentials:')
+    EMAIL = input('Email: ')
+    PWD = getpass()
 
 
 def scrape_generic(url):
@@ -285,6 +290,10 @@ def _scrape_fb(driver, url):
 
 
 def scrape(headless=False):
+    global EMAIL, PWD
+    assert EMAIL is not None and PWD is not None, 'scrape.set_login_credentials must be called prior to scrape.scrape'
+
+
     chrome_options = webdriver.ChromeOptions()
     # This enables headless Chrome control so the window isn't opened and displayed
     if headless:
@@ -322,5 +331,7 @@ def scrape(headless=False):
 
     driver.quit()
 
+
 if __name__ == '__main__':
+    set_login_credentials()
     scrape()

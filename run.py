@@ -7,11 +7,27 @@ import tqdm
 import datetime
 from threading import Thread
 import sys
+import argparse
 
 import database as db
 
 
 CHECK_INTERVAL_MINUTES = 15
+
+
+def parse_args():
+    """Parses CLA"""
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--headless',
+                        help='Run Chrome in headless mode so no browser window is opened.',
+                        action='store_true',
+                        required=False)
+    parser.add_argument('--skip-first-scrape',
+                        help='Don\'t scrape on launch, wait the predetermined time first.',
+                        action='store_true',
+                        required=False)
+
+    return parser.parse_args()
 
 
 def check_new_dogs(skip_scraping=False, headless=False):
@@ -39,17 +55,18 @@ def check_new_dogs(skip_scraping=False, headless=False):
 
 
 if __name__ == '__main__':
-    skip_first = '--skip-first-scrape' in sys.argv
-    headless = '--headless' in sys.argv
-
+    args = parse_args()
+    scrape.set_login_credentials()
+    
     wandb.login()
     wandb.init('WatchDog')
     web_app_thread = Thread(target=web.run)
     web_app_thread.start()
 
+    skip_scraping = args.skip_first_scrape
     while True:
-        check_new_dogs(skip_scraping=skip_first, headless=headless)
+        check_new_dogs(skip_scraping=skip_scraping, headless=args.headless)
         print(f'\nCheck complete at {datetime.datetime.now()}')
         print(f'Sleeping for {CHECK_INTERVAL_MINUTES} minutes...\n')
         time.sleep(CHECK_INTERVAL_MINUTES * 60)
-        skip_first = False
+        skip_scraping = False
