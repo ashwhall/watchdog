@@ -34,7 +34,7 @@ def already_scraped(url, img_url, img_path):
 
 
 def _fetch_image(url):
-    return Image.open(requests.get(url, stream=True).raw)
+    return Image.open(requests.get(url, stream=True).raw).convert('RGB')
 
 
 def _save_image(url, filepath):

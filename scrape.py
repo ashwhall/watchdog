@@ -6,8 +6,10 @@ import os
 from urllib.parse import urlparse
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait, Select
-import database as db
+import PIL
 from getpass import getpass
+
+import database as db
 
 
 EMAIL = PWD = None
@@ -158,7 +160,6 @@ def scrape_saveadog(driver):
     for category in ('small-dogs', 'puppies'):
         driver.get(f'https://saveadog.org.au/animals-adoptions/dog/{category}')
 
-
         modal_close = selenium_get_with_wait(driver, lambda d: d.find_elements_by_class_name('mmodal__close'))
         if modal_close:
             selenium_try_click(modal_close[0])
@@ -193,11 +194,95 @@ def scrape_rspca(driver):
             href = dog_box.find_element_by_tag_name('a').get_attribute('href')
             if img_src:
                 db.add(url=href, img_url=img_src)
-                # if filepath := get_image_filepath(img_src):
-                #     if not os.path.exists(filepath):
-                #         if save_image(img_src, filepath):
-                #             dogs[href] = filepath
         page += 1
+
+    print(f'done - {db.count() - start_count} dogs scraped.', flush=True)
+
+
+def scrape_petbarn(driver):
+    print('Scraping petbarn.com.au... ', end='', flush=True)
+    start_count = db.count()
+
+
+    driver.get(f'https://www.petbarn.com.au/petspot/dog-adoptions/')
+
+    show_filter_btn = selenium_get_with_wait(driver, lambda d: d.find_element_by_id('showfilters'))
+    if show_filter_btn:
+        selenium_try_click(show_filter_btn)
+
+    # Filters
+    state_select_div = selenium_get_with_wait(driver, lambda d: d.find_element_by_class_name('sl-state'))
+    state_select = None
+    if state_select_div:
+        state_select = state_select_div.find_element_by_tag_name('select')
+    time.sleep(1)
+
+    if state_select:
+        Select(state_select).select_by_value('VIC')
+
+    for chkbox_id in ('lifestage-puppy', 'lifestage-adult', 'breed-size-sm'):
+        chkbox_candidates = selenium_get_with_wait(driver, lambda d: d.find_elements_by_id(chkbox_id))
+        for chkbox in chkbox_candidates:
+            if chkbox.tag_name == 'input':
+                selenium_try_click(chkbox)
+
+    # Apply filter
+    apply_btn = selenium_get_with_wait(driver, lambda d: d.find_element_by_id('filter-results'))
+    if apply_btn:
+        apply_btn.click()
+
+    more_pages = True
+    while more_pages:
+        more_pages = False
+        dog_boxes = selenium_get_with_wait(driver, lambda d: d.find_elements_by_class_name('sl-candidate'))
+        for dog in dog_boxes:
+            href = img_src = None
+            img = dog.find_element_by_class_name('sl-candidate-image')
+            if img:
+                img_src = get_img_src(img)
+            popup_btn = dog.find_element_by_class_name('sl-candidate-trigger')
+            if popup_btn:
+                driver.execute_script("arguments[0].click();", popup_btn)
+            button = selenium_get_with_wait(driver, lambda d: d.find_element_by_class_name('enquire-now'))
+            if button:
+                link = button.find_element_by_tag_name('a')
+                if link:
+                    href = link.get_attribute('href')
+
+            if href and img_src:
+                try:
+                    db.add(url=href, img_url=img_src)
+                except PIL.UnidentifiedImageError:
+                    # Probably a 404 - this happens from time to time on PetBarn.
+                    # Navigate to the original listing and grab the image from there
+                    link.click()
+                    driver.switch_to.window(driver.window_handles[-1])
+                    time.sleep(1)
+                    for img_div in selenium_get_with_wait(driver, lambda d: d.find_elements_by_class_name('dogCard')):
+                        for img in img_div.find_elements_by_tag_name('img'):
+                            img_src = get_img_src(img)
+                            db.add(url=href, img_url=img_src)
+                            break
+                    driver.close()
+
+            close_btn = selenium_get_with_wait(driver, lambda d: d.find_element_by_class_name('sl-candidate-close'))
+            if close_btn:
+                close_btn.click()
+        pagination_div = selenium_get_with_wait(driver, lambda d: d.find_element_by_class_name('sl-pagination'))
+        if pagination_div:
+            prev_was_current_page = False
+            index = 0
+            for child in pagination_div.find_elements_by_class_name('page-num '):
+                index += 1
+                if 'active' in child.get_attribute('class'):
+                    prev_was_current_page = True
+                else:
+                    if prev_was_current_page:
+                        btn = child.find_element_by_tag_name('a')
+                        if btn:
+                            btn.click()
+                            more_pages = True
+                            break
 
     print(f'done - {db.count() - start_count} dogs scraped.', flush=True)
 
@@ -299,13 +384,14 @@ def scrape(headless=False):
     if headless:
         chrome_options.headless = True
 
-    driver = webdriver.Chrome(executable_path='chromedriver_linux64/chromedriver', chrome_options=chrome_options)
+    driver = webdriver.Chrome(executable_path='chromedriver_linux64/chromedriver', options=chrome_options)
 
     scrape_dogshome()
     scrape_petrescue()
     retry_selenium(driver, scrape_adoptapet)
     retry_selenium(driver, scrape_saveadog)
     retry_selenium(driver, scrape_rspca)
+    retry_selenium(driver, scrape_petbarn)
 
     fb_login(driver)
     scrape_fb_group(driver, '571800346240922')

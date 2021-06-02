@@ -65,8 +65,12 @@ if __name__ == '__main__':
 
     skip_scraping = args.skip_first_scrape
     while True:
+        start_time = time.time()
         check_new_dogs(skip_scraping=skip_scraping, headless=args.headless)
+        duration = time.time() - start_time
         print(f'\nCheck complete at {datetime.datetime.now()}')
+        print(f'Duration: {round(duration)} seconds.')
         print(f'Sleeping for {CHECK_INTERVAL_MINUTES} minutes...\n')
+
         time.sleep(CHECK_INTERVAL_MINUTES * 60)
         skip_scraping = False
