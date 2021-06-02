@@ -45,6 +45,14 @@ def _save_image(url, filepath):
     return False
 
 
+def make_unique_filename(name):
+    now = str(datetime.datetime.now())
+    now = now[:now.rindex('.')]
+    now = now.replace(':', '-').replace(' ', '_')
+    base, ext = os.path.splitext(name)
+    return f'{base}_{now}{ext}'
+
+
 def get_image_filepath(url):
     if not url.startswith('http'):
         parsed_url = urlparse(url)
@@ -52,11 +60,14 @@ def get_image_filepath(url):
     filename = os.path.basename(url)
     if '?' in filename:
         filename = filename[:filename.index('?')]
-    # if filename.lower().endswith('jpg') or filename.lower().endswith('jpeg'):
     if os.path.splitext(filename)[1].lower().endswith('php'):
         filename = os.path.splitext(filename)[0] + '.jpg'
     if not os.path.splitext(filename)[1]:
         filename = filename + '.jpg'
+    # Facebook external link thumbnails all have the same filename - make them unique in this case
+    if filename == 'safe_image.jpg':
+        filename = make_unique_filename(filename)
+
     return os.path.join('.', 'images', 'fetched', filename)
 
 
