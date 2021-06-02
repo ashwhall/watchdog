@@ -285,13 +285,12 @@ def _scrape_fb(driver, url):
 
 
 def scrape(headless=False):
+    chrome_options = webdriver.ChromeOptions()
     # This enables headless Chrome control so the window isn't opened and displayed
     if headless:
-        from pyvirtualdisplay import Display
-        display = Display(visible=False, size=(800, 600))
-        display.start()
+        chrome_options.headless = True
 
-    driver = webdriver.Chrome(executable_path='chromedriver_linux64/chromedriver')
+    driver = webdriver.Chrome(executable_path='chromedriver_linux64/chromedriver', chrome_options=chrome_options)
 
     scrape_dogshome()
     scrape_petrescue()
