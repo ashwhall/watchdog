@@ -20,6 +20,8 @@ with open(os.path.join('desired_breeds.csv'), 'r') as f:
     desired_indices = [int(idx) for idx, breed in csv.reader(f)]
 
 PROB_THRESH = 0.5
+imgnet_first_dog_idx = 152  # We're actually skipping Chihuahua as the classifier's a bit overzealous with predicting it
+imgnet_last_dog_idx = 280
 
 def top_n_probs(predictions, k):
     """Get the top k, then remove all that are less than .75x as high probability as the most probable"""
@@ -39,9 +41,9 @@ def _is_dog(img_path):
     """Returns true if the top5 imagenet predictions contain a dog class"""
     img = load_image(img_path)
     preds = _combine_preds_mean(is_dog_model(img))
-    _, top_5_indices = torch.topk(preds, 5)
-    for i in top_5_indices:
-        if 151 <= i <= 280:
+    _, top_10_indices = torch.topk(preds, 10)
+    for i in top_10_indices:
+        if 152 <= i <= 280:
             return True
     return False
 

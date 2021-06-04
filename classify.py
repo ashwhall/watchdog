@@ -4,7 +4,7 @@ import torch.nn.functional as F
 from torchvision.models import resnext101_32x8d as Classifier
 from torchvision import transforms as T
 
-from labels import LABELS, DESIRED
+from imagenet_labels import LABELS, DESIRED
 import database as db
 
 FIRST_IDX = 151

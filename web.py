@@ -10,6 +10,10 @@ log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
 
 
+def capitalise(string):
+    return f'{string[0].upper()}{string[1:]}'
+
+
 def generate_thumbnail(href, info):
     colour = '#cccccc'
     if info['desired'] == False:
@@ -35,7 +39,7 @@ def generate_thumbnail(href, info):
             html.Div('Predicted Breeds', style={'font-weight': 'bold'}),
 
             html.Div([
-                html.Div(b.split(',')[0]) for b in info['predicted_classes']
+                html.Div(capitalise(b.replace('_', ' ')).split(',')[0]) for b in info['predicted_classes']
             ]) if info['predicted_classes'] else html.Div([
                 'No predictions yet' if info['desired'] is None else 'Not a dog!'
             ]),
