@@ -36,8 +36,8 @@ def generate_thumbnail(href, info):
 
             html.Div([
                 html.Div(b.split(',')[0]) for b in info['predicted_classes']
-            ])if info['predicted_classes'] else html.Div([
-                'No predictions yet'
+            ]) if info['predicted_classes'] else html.Div([
+                'No predictions yet' if info['desired'] is None else 'Not a dog!'
             ]),
 
             html.Div(f'Scraped: {info["scrape_datetime"][:info["scrape_datetime"].rindex(".")]}',

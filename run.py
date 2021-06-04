@@ -1,6 +1,7 @@
 import time
 import scrape
-import classify
+# from classify import classify_with_path as classify
+from classify_v2 import classify
 import web
 import wandb
 import tqdm
@@ -40,7 +41,7 @@ def check_new_dogs(skip_scraping=False, headless=False):
     if unclassified:
         print('\nCLASSIFYING DOGS')
         for url, info in tqdm.tqdm(unclassified.items()):
-            db.set_desired(url, *classify.classify_with_path(info['img']))
+            db.set_desired(url, *classify(info['img']))
 
     unnotified_keys = list(db.get_unnotified().keys())
     if unnotified_keys:

@@ -4,6 +4,8 @@ out/
 images/fetched
 images/database.json
 geckodriver.log
+/data
+*.pt
 
 # Core dump
 /core
