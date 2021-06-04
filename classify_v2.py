@@ -3,13 +3,15 @@ import csv
 import torch
 import torch.nn.functional as F
 from flash.core.classification import Logits
+from torchvision.models import resnext101_32x8d as IsDogClassifier
 from flash.image import ImageClassifier
 from PIL import Image
 
+from classify import load_image, _combine_preds_mean
 import database as db
 
-
-model = None
+is_dog_model = None
+breed_model = None
 
 with open(os.path.join('data', 'partitioned', 'labels.csv'), 'r') as f:
     breed_labels = [breed for idx, breed in csv.reader(f)]
@@ -33,16 +35,20 @@ def top_n_probs(predictions, k):
     return top_n_indices, topk_probs
 
 
-def _is_dog(top_n_3):
-    return sum(top_n_3) >= 0.6
+def _is_dog(img_path):
+    """Returns true if the top5 imagenet predictions contain a dog class"""
+    img = load_image(img_path)
+    preds = _combine_preds_mean(is_dog_model(img))
+    _, top_5_indices = torch.topk(preds, 5)
+    for i in top_5_indices:
+        if 151 <= i <= 280:
+            return True
+    return False
 
 
 def _process_preds(predictions):
     predictions = F.softmax(predictions[None], 1)[0]
     top_n_3_indices, top_n_3_probs = top_n_probs(predictions, 3)
-
-    if not _is_dog(top_n_3_probs):
-        return False, []
 
     pred_labels = [breed_labels[i] for i in top_n_3_indices]
     is_desired = any(i in desired_indices for i in top_n_3_indices)
@@ -50,12 +56,16 @@ def _process_preds(predictions):
 
 
 def classify(img_path):
-    global model
-    if model is None:
-        model = ImageClassifier.load_from_checkpoint('breed_classifier.pt').cuda()
-        model.serializer = Logits()
+    global breed_model, is_dog_model
+    if breed_model is None:
+        breed_model = ImageClassifier.load_from_checkpoint('breed_classifier.pt').cuda()
+        breed_model.serializer = Logits()
+    if is_dog_model is None:
+        is_dog_model = IsDogClassifier(pretrained=True).cuda()
 
-    preds = torch.tensor(model.predict([img_path]))[0]
+    if not _is_dog(img_path):
+        return False, []
+    preds = torch.tensor(breed_model.predict([img_path]))[0]
 
     is_desired, pred_labels = _process_preds(preds)
     return is_desired, pred_labels
