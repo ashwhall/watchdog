@@ -17,6 +17,7 @@ with open(os.path.join('data', 'partitioned', 'labels.csv'), 'r') as f:
 with open(os.path.join('desired_breeds.csv'), 'r') as f:
     desired_indices = [int(idx) for idx, breed in csv.reader(f)]
 
+PROB_THRESH = 0.5
 
 def top_n_probs(predictions, k):
     """Get the top k, then remove all that are less than .75x as high probability as the most probable"""
@@ -26,7 +27,7 @@ def top_n_probs(predictions, k):
     top_n_indices = []
     top_n_probabilities = []
     for prob, idx in zip(topk_probs, topk_indices):
-        if prob / topk_probs[0] >= 0.75:
+        if prob / topk_probs[0] >= PROB_THRESH:
             top_n_indices.append(int(idx.detach().cpu().numpy()))
             top_n_probabilities.append(float(prob.detach().cpu().numpy()))
     return top_n_indices, topk_probs
@@ -37,7 +38,7 @@ def _is_dog(top_n_3):
 
 
 def _process_preds(predictions):
-    predictions = F.softmax(predictions[None])[0]
+    predictions = F.softmax(predictions[None], 1)[0]
     top_n_3_indices, top_n_3_probs = top_n_probs(predictions, 3)
 
     if not _is_dog(top_n_3_probs):
