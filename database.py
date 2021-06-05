@@ -38,11 +38,10 @@ def _fetch_image(url):
 
 
 def _save_image(url, filepath):
+    """Save an image, return True if it's big enough to be a legit dog image"""
     img_data = _fetch_image(url)
-    if img_data.size[0] >= 100 and img_data.size[1] >= 100:
-        img_data.save(filepath)
-        return True
-    return False
+    img_data.save(filepath)
+    return img_data.size[0] >= 100 and img_data.size[1] >= 100
 
 
 def make_unique_filename(name):
@@ -74,13 +73,13 @@ def get_image_filepath(url):
 def add(url, img_url):
     img_path = get_image_filepath(img_url)
     if not already_scraped(url, img_url, img_path):
-        _save_image(img_url, img_path)
+        legit_dog = _save_image(img_url, img_path)
 
         dog_db[url] = dict(img=img_path,
-                           desired=None,
-                           notified=False,
+                           desired=None if legit_dog else False,
+                           notified=False if legit_dog else True,
                            scrape_datetime=datetime.datetime.now(),
-                           predicted_classes=None,
+                           predicted_classes=None if legit_dog else [],
                            img_url=img_url)
         save_db()
 
