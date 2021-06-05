@@ -54,17 +54,24 @@ def _process_preds(predictions):
     return is_desired, pred_labels
 
 
+def _predict_breed(img_path):
+    img = load_image(img_path)
+    out = _combine_preds_mean(breed_model(img))
+
+    return out
+
 def classify(img_path):
     global breed_model, is_dog_model
     if breed_model is None:
         breed_model = ImageClassifier.load_from_checkpoint('breed_classifier.pt').cuda()
-        breed_model.serializer = Logits()
+        breed_model.eval()
     if is_dog_model is None:
         is_dog_model = IsDogClassifier(pretrained=True).cuda()
+        is_dog_model.eval()
 
     if not _is_dog(img_path):
         return False, []
-    preds = torch.tensor(breed_model.predict([img_path]))[0]
+    preds = _predict_breed(img_path)
 
     is_desired, pred_labels = _process_preds(preds)
     return is_desired, pred_labels
