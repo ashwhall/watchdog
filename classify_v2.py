@@ -19,7 +19,7 @@ with open(os.path.join('data', 'partitioned', 'labels.csv'), 'r') as f:
 with open(os.path.join('desired_breeds.csv'), 'r') as f:
     desired_indices = [int(idx) for idx, breed in csv.reader(f)]
 
-PROB_THRESH = 0.5
+PROB_THRESH = 0.6
 imgnet_first_dog_idx = 152  # We're actually skipping Chihuahua as the classifier's a bit overzealous with predicting it
 imgnet_last_dog_idx = 280
 
