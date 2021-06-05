@@ -38,14 +38,11 @@ def top_n_probs(predictions, k):
 
 
 def _is_dog(img_path):
-    """Returns true if the top5 imagenet predictions contain a dog class"""
     img = load_image(img_path)
     preds = _combine_preds_mean(is_dog_model(img))
-    _, top_10_indices = torch.topk(preds, 10)
-    for i in top_10_indices:
-        if 152 <= i <= 280:
-            return True
-    return False
+
+    dog_probs = [preds[i] for i in range(imgnet_first_dog_idx, imgnet_last_dog_idx+1)]
+    return sum(dog_probs) > 0.16
 
 
 def _process_preds(predictions):
