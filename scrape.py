@@ -17,6 +17,19 @@ EMAIL = PWD = None
 
 def set_login_credentials():
     global EMAIL, PWD
+    ############# NOOOOOOOOOOOOOOOOOOOOOO
+    ############# NOOOOOOOOOOOOOOOOOOOOOO
+    ############# NOOOOOOOOOOOOOOOOOOOOOO
+    ############# NOOOOOOOOOOOOOOOOOOOOOO
+    ############# NOOOOOOOOOOOOOOOOOOOOOO
+    EMAIL = 'drummer.ash@gmail.com'
+    PWD = '582*guwnv@'
+    return
+    ############# NOOOOOOOOOOOOOOOOOOOOOO
+    ############# NOOOOOOOOOOOOOOOOOOOOOO
+    ############# NOOOOOOOOOOOOOOOOOOOOOO
+    ############# NOOOOOOOOOOOOOOOOOOOOOO
+
     print('Enter Facebook credentials:')
     EMAIL = input('Email: ')
     PWD = getpass()
@@ -414,6 +427,7 @@ def scrape(headless=False):
     scrape_fb_page(driver, 'melbourneanimalrescue')
     scrape_fb_page(driver, 'newbeginnings.animalrescueinc')
     scrape_fb_page(driver, 'Australiank9rescuevic')
+    scrape_fb_page(driver, 'Krazy-Kat-Rescue-974224009276491')
 
     driver.quit()
 
