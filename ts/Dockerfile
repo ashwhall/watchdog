@@ -53,7 +53,7 @@ RUN npm cache clean --force && \
 # Copy source code
 COPY . .
 
-# Create entrypoint script that handles cross-platform Chromium paths
+# Create entrypoint script that handles cross-platform Chromium paths and runs migrations
 RUN echo '#!/bin/bash\n\
     # Ensure node_modules is properly set up\n\
     if [ ! -d "/app/node_modules" ] || [ ! -f "/app/node_modules/.bin/concurrently" ]; then\n\
@@ -76,6 +76,10 @@ RUN echo '#!/bin/bash\n\
     echo "Warning: No system Chromium/Chrome found, Puppeteer may fail"\n\
     fi\n\
     \n\
+    # Run database migrations on startup\n\
+    echo "Running database migrations..."\n\
+    npm run db:migrate || echo "Migration failed, continuing anyway..."\n\
+    \n\
     exec "$@"' > /entrypoint.sh && chmod +x /entrypoint.sh
 
 # Expose port
@@ -85,4 +89,4 @@ EXPOSE 3000
 ENTRYPOINT ["/entrypoint.sh"]
 
 # Start the application
-CMD ["npm", "run", "dev:full"]
+CMD ["npm", "run", "dev:full-with-migrations"]

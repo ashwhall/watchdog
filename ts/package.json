@@ -4,7 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
+    "dev:with-migrations": "npm run db:migrate && npm run dev",
     "dev:full": "concurrently \"npm run dev\" \"npm run scheduler:start\" --names \"Next.js,Scheduler\" --prefix-colors \"cyan,green\"",
+    "dev:full-with-migrations": "npm run db:migrate && npm run dev:full",
     "build": "next build",
     "start": "next start",
     "start:full": "concurrently \"npm run start\" \"npm run scheduler:start\" --names \"Next.js,Scheduler\" --prefix-colors \"cyan,green\"",
