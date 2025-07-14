@@ -76,9 +76,13 @@ RUN echo '#!/bin/bash\n\
     echo "Warning: No system Chromium/Chrome found, Puppeteer may fail"\n\
     fi\n\
     \n\
+    # Ensure drizzle directory structure exists\n\
+    echo "Ensuring drizzle setup..."\n\
+    bash /app/scripts/ensure-drizzle-setup.sh || echo "Drizzle setup script failed, continuing..."\n\
+    \n\
     # Run database migrations on startup\n\
     echo "Running database migrations..."\n\
-    npm run db:migrate || echo "Migration failed, continuing anyway..."\n\
+    npm run db:migrate || (echo "Primary migration failed, trying fallback..." && npm run db:migrate-fallback) || echo "All migration attempts failed, continuing anyway..."\n\
     \n\
     exec "$@"' > /entrypoint.sh && chmod +x /entrypoint.sh
 
