@@ -65,25 +65,9 @@ export default function EditDog() {
           <title>Watchdog - Edit Dog</title>
         </Head>
         <Layout>
-          <div className="text-center py-16">
-            <div className="relative mx-auto w-32 h-32 mb-8">
-              {/* Rainbow spinning loader */}
-              <div
-                className="absolute inset-0 rounded-full border-4 border-transparent bg-gradient-to-r from-rainbow-red via-rainbow-blue to-rainbow-purple animate-spin"
-                style={{
-                  background:
-                    'conic-gradient(from 0deg, #ff6b6b, #ffa726, #ffeb3b, #66bb6a, #42a5f5, #7e57c2, #ab47bc, #ff6b6b)',
-                  mask: 'radial-gradient(circle at center, transparent 50%, black 50%)',
-                  WebkitMask:
-                    'radial-gradient(circle at center, transparent 50%, black 50%)',
-                }}
-              ></div>
-              <div className="absolute inset-2 bg-dark-bg rounded-full"></div>
-              <div className="absolute inset-0 flex items-center justify-center text-4xl">
-                🐕
-              </div>
-            </div>
-            <p className="text-xl rainbow-text font-bold">Loading dog...</p>
+          <div className="text-center py-20">
+            <div className="w-12 h-12 mx-auto mb-6 border-2 border-accent border-t-transparent rounded-full animate-spin"></div>
+            <p className="text-text-secondary text-lg">Loading dog...</p>
           </div>
         </Layout>
       </>
@@ -97,19 +81,16 @@ export default function EditDog() {
           <title>Watchdog - Edit Dog</title>
         </Head>
         <Layout>
-          <div className="text-center py-16">
-            <div className="text-6xl mb-6">😞</div>
-            <div className="text-rainbow-red text-xl mb-6 font-bold">
+          <div className="text-center py-20">
+            <div className="w-20 h-20 mx-auto mb-6 bg-error rounded-full flex items-center justify-center text-2xl">
+              ⚠️
+            </div>
+            <div className="text-error text-xl mb-6 font-semibold">
               Error: {error || 'Dog not found'}
             </div>
             <button
               onClick={() => router.push('/')}
-              className="
-                px-6 py-3 bg-gradient-to-r from-rainbow-blue to-rainbow-indigo
-                text-white rounded-lg font-bold transform transition-all duration-300
-                hover:scale-105 hover:shadow-lg hover:shadow-rainbow-blue/25
-                focus:outline-none focus:ring-2 focus:ring-rainbow-blue focus:ring-offset-2 focus:ring-offset-dark-bg
-              "
+              className="px-6 py-3 bg-accent text-white rounded-2xl font-medium hover:bg-accent-hover transition-all duration-200 hover:shadow-glow"
             >
               Back to Dashboard
             </button>
@@ -126,23 +107,21 @@ export default function EditDog() {
       </Head>
       <Layout>
         <div className="max-w-2xl mx-auto">
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold rainbow-text">✏️ Edit Dog</h1>
-            <p className="text-dark-text-secondary text-lg">
+          <div className="glass rounded-3xl p-6 mb-8">
+            <h1 className="text-3xl font-bold text-text-primary">
+              ✏️ Edit Dog
+            </h1>
+            <p className="text-text-secondary text-lg">
               Update {dog.name}&apos;s information
             </p>
           </div>
 
-          <div className="group relative">
-            <div className="absolute -inset-0.5 bg-gradient-to-r from-rainbow-green via-rainbow-blue to-rainbow-indigo rounded-xl blur opacity-30 group-hover:opacity-60 transition duration-500"></div>
-
-            <div className="relative bg-dark-surface rounded-xl shadow-2xl p-8 border border-dark-border">
-              <DogForm
-                dog={dog}
-                onSubmit={handleSubmit}
-                onCancel={handleCancel}
-              />
-            </div>
+          <div className="glass rounded-3xl p-8">
+            <DogForm
+              dog={dog}
+              onSubmit={handleSubmit}
+              onCancel={handleCancel}
+            />
           </div>
         </div>
       </Layout>

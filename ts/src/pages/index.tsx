@@ -161,27 +161,9 @@ export default function Home() {
           <title>Watchdog</title>
         </Head>
         <Layout>
-          <div className="text-center py-16">
-            <div className="relative mx-auto w-32 h-32 mb-8">
-              {/* Rainbow spinning loader */}
-              <div
-                className="absolute inset-0 rounded-full border-4 border-transparent bg-gradient-to-r from-rainbow-red via-rainbow-blue to-rainbow-purple animate-spin"
-                style={{
-                  background:
-                    'conic-gradient(from 0deg, #ff6b6b, #ffa726, #ffeb3b, #66bb6a, #42a5f5, #7e57c2, #ab47bc, #ff6b6b)',
-                  mask: 'radial-gradient(circle at center, transparent 50%, black 50%)',
-                  WebkitMask:
-                    'radial-gradient(circle at center, transparent 50%, black 50%)',
-                }}
-              ></div>
-              <div className="absolute inset-2 bg-dark-bg rounded-full"></div>
-              <div className="absolute inset-0 flex items-center justify-center text-4xl">
-                🐕
-              </div>
-            </div>
-            <p className="text-xl rainbow-text font-bold">
-              Loading our furry friends...
-            </p>
+          <div className="text-center py-20">
+            <div className="w-12 h-12 mx-auto mb-6 border-2 border-accent border-t-transparent rounded-full animate-spin"></div>
+            <p className="text-text-secondary text-lg">Loading dogs...</p>
           </div>
         </Layout>
       </>
@@ -195,21 +177,16 @@ export default function Home() {
           <title>Watchdog - Error</title>
         </Head>
         <Layout>
-          <div className="text-center py-16">
-            <div className="text-6xl mb-6">😞</div>
-            <div className="text-rainbow-red text-xl mb-6 font-bold">
-              Error: {error}
+          <div className="text-center py-20">
+            <div className="w-20 h-20 mx-auto mb-6 bg-error rounded-full flex items-center justify-center text-2xl">
+              ⚠️
             </div>
+            <div className="text-error text-xl mb-6 font-semibold">{error}</div>
             <button
               onClick={() => fetchDogs()}
-              className="
-              px-6 py-3 bg-gradient-to-r from-rainbow-red to-rainbow-pink 
-              text-white rounded-lg font-bold transform transition-all duration-300
-              hover:scale-105 hover:shadow-lg hover:shadow-rainbow-red/25
-              focus:outline-none focus:ring-2 focus:ring-rainbow-red focus:ring-offset-2 focus:ring-offset-dark-bg
-            "
+              className="px-6 py-3 bg-accent text-white rounded-2xl font-medium hover:bg-accent-hover transition-all duration-200 hover:shadow-glow"
             >
-              Try Again 🔄
+              Try Again
             </button>
           </div>
         </Layout>
@@ -223,213 +200,128 @@ export default function Home() {
         <title>Watchdog</title>
       </Head>
       <Layout>
-        <div className="space-y-8">
+        <div className="space-y-12">
           {dogs.length === 0 ? (
-            <div className="text-center py-20">
-              <div className="relative inline-block">
-                <div className="text-8xl mb-6">🐕</div>
-                <div className="absolute -top-2 -right-2 text-2xl">✨</div>
-                <div className="absolute -bottom-2 -left-2 text-2xl">💫</div>
+            <div className="text-center py-24">
+              <div className="w-24 h-24 mx-auto mb-8 bg-card rounded-full flex items-center justify-center text-4xl animate-float">
+                🐕
               </div>
-              <h3 className="text-2xl font-bold text-white mb-4">
-                No pups found yet!
+              <h3 className="text-3xl font-bold text-text-primary mb-4">
+                No dogs yet
               </h3>
-              <p className="text-dark-text-secondary mb-8 max-w-md mx-auto text-lg">
-                Start building your dog database by adding your first furry
-                friend.
+              <p className="text-text-secondary mb-12 max-w-md mx-auto text-lg">
+                Start your collection by adding your first furry friend to the
+                database.
               </p>
               <Link
                 href="/dogs/add"
-                className="
-                inline-flex items-center space-x-2 px-8 py-4 
-                bg-gradient-to-r from-rainbow-purple to-rainbow-pink
-                text-white rounded-xl font-bold transform transition-all duration-300
-                hover:scale-105 hover:shadow-xl hover:shadow-rainbow-purple/25
-                focus:outline-none focus:ring-2 focus:ring-rainbow-purple focus:ring-offset-2 focus:ring-offset-dark-bg
-              "
+                className="inline-flex items-center px-8 py-4 bg-accent text-white rounded-2xl font-semibold hover:bg-accent-hover transition-all duration-200 hover:shadow-glow hover:-translate-y-1"
               >
-                <span>🎉</span>
-                <span>Add Your First Dog</span>
-                <span>🐾</span>
+                Add Your First Dog
               </Link>
             </div>
           ) : (
             <>
-              {/* Combined Header and Controls Section */}
-              <div className="relative">
-                {/* Background gradient */}
-                <div className="absolute inset-0 bg-gradient-to-r from-rainbow-red/10 via-rainbow-blue/10 to-rainbow-purple/10 rounded-2xl blur-xl"></div>
-
-                <div className="relative bg-dark-surface/50 backdrop-blur-sm rounded-2xl p-8 border border-dark-border">
-                  {/* Status indicators */}
-                  <div className="flex items-center space-x-6 text-dark-text-secondary mb-6">
+              {/* Floating control panel */}
+              <div className="glass rounded-3xl p-8 shadow-large animate-scale-in">
+                {/* Header */}
+                <div className="flex items-center justify-between mb-8">
+                  <div className="flex items-center space-x-4">
+                    <h1 className="text-2xl font-bold text-text-primary">
+                      {dogs.length} {dogs.length === 1 ? 'Dog' : 'Dogs'}
+                    </h1>
                     {lastRefresh && (
-                      <span className="flex items-center space-x-2 text-sm bg-dark-elevated px-3 py-1 rounded-full">
-                        <span>🕐</span>
-                        <span>
-                          Last updated: {lastRefresh.toLocaleTimeString()}
-                        </span>
+                      <span className="text-text-tertiary text-sm">
+                        Updated {lastRefresh.toLocaleTimeString()}
                       </span>
                     )}
                     {isRefreshing && (
-                      <span className="flex items-center space-x-2 text-sm text-rainbow-blue bg-dark-elevated px-3 py-1 rounded-full">
-                        <svg
-                          className="animate-spin h-4 w-4"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                        >
-                          <circle
-                            className="opacity-25"
-                            cx="12"
-                            cy="12"
-                            r="10"
-                            stroke="currentColor"
-                            strokeWidth="4"
-                          ></circle>
-                          <path
-                            className="opacity-75"
-                            fill="currentColor"
-                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                          ></path>
-                        </svg>
-                        <span>Updating database...</span>
-                      </span>
+                      <div className="flex items-center space-x-2 text-accent">
+                        <div className="w-4 h-4 border-2 border-accent border-t-transparent rounded-full animate-spin"></div>
+                        <span className="text-sm">Updating...</span>
+                      </div>
                     )}
                   </div>
 
-                  {/* Main controls */}
-                  <div className="flex justify-between items-center">
-                    <div className="flex items-center space-x-6">
-                      <span className="flex items-center space-x-2 text-lg font-medium text-white">
-                        <span>🐾</span>
-                        <span>{dogs.length} pups in database</span>
-                      </span>
-                      <div className="flex items-center space-x-2">
-                        <label className="flex items-center cursor-pointer group">
-                          <input
-                            type="checkbox"
-                            checked={autoRefresh && autoRefreshInterval > 0}
-                            onChange={(e) => setAutoRefresh(e.target.checked)}
-                            disabled={autoRefreshInterval === 0}
-                            className="
-                            mr-3 w-5 h-5 text-rainbow-blue bg-dark-elevated border-dark-border 
-                            rounded focus:ring-rainbow-blue focus:ring-2 disabled:opacity-50
-                          "
-                          />
-                          <span className="text-sm text-dark-text-secondary group-hover:text-white transition-colors duration-300">
-                            ✨ Auto-refresh{' '}
-                            {autoRefreshInterval === 0
-                              ? '(disabled)'
-                              : `(${autoRefreshInterval}s)`}
-                          </span>
-                        </label>
-                      </div>
-                      <div className="flex items-center space-x-3">
-                        <span className="text-dark-text-secondary">
-                          Sort by:
-                        </span>
-                        <select
-                          value={sortBy}
-                          onChange={(e) =>
-                            setSortBy(
-                              e.target.value as
-                                | 'name'
-                                | 'breed'
-                                | 'scrapedAt'
-                                | 'updatedAt'
-                            )
-                          }
-                          className="
-                          bg-dark-elevated border border-dark-border rounded-lg px-3 py-2 
-                          text-white focus:ring-2 focus:ring-rainbow-blue focus:border-rainbow-blue
-                          transition-all duration-300
-                        "
-                        >
-                          <option value="scrapedAt">📅 Date Scraped</option>
-                          <option value="updatedAt">🔄 Date Updated</option>
-                          <option value="name">🏷️ Name</option>
-                          <option value="breed">🐕 Breed</option>
-                        </select>
-                        <button
-                          onClick={() =>
-                            setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')
-                          }
-                          className="
-                          px-3 py-2 bg-dark-elevated border border-dark-border rounded-lg
-                          text-rainbow-blue hover:text-white hover:bg-rainbow-blue
-                          transition-all duration-300 font-bold
-                        "
-                          title={`Sort ${
-                            sortOrder === 'asc' ? 'descending' : 'ascending'
-                          }`}
-                        >
-                          {sortOrder === 'asc' ? '⬆️' : '⬇️'}
-                        </button>
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-4">
-                      <button
-                        onClick={() => fetchDogs()}
-                        disabled={isRefreshing}
-                        className="
-                        flex items-center space-x-2 px-4 py-2 
-                        bg-gradient-to-r from-rainbow-indigo to-rainbow-purple
-                        text-white rounded-lg font-medium transform transition-all duration-300
-                        hover:scale-105 hover:shadow-lg hover:shadow-rainbow-purple/25
-                        disabled:opacity-50 disabled:cursor-not-allowed
-                        focus:outline-none focus:ring-2 focus:ring-rainbow-purple focus:ring-offset-2 focus:ring-offset-dark-bg
-                      "
-                      >
-                        {isRefreshing ? (
-                          <>
-                            <svg
-                              className="animate-spin h-4 w-4"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                            >
-                              <circle
-                                className="opacity-25"
-                                cx="12"
-                                cy="12"
-                                r="10"
-                                stroke="currentColor"
-                                strokeWidth="4"
-                              ></circle>
-                              <path
-                                className="opacity-75"
-                                fill="currentColor"
-                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                              ></path>
-                            </svg>
-                            <span>Refreshing...</span>
-                          </>
-                        ) : (
-                          <>
-                            <span>🔄</span>
-                            <span>Refresh</span>
-                          </>
-                        )}
-                      </button>
-                      <Link
-                        href="/dogs/add"
-                        className="
-                        px-6 py-3 bg-gradient-to-r from-rainbow-green to-rainbow-blue
-                        text-white rounded-lg font-bold transform transition-all duration-300
-                        hover:scale-105 hover:shadow-lg hover:shadow-rainbow-blue/25
-                        focus:outline-none focus:ring-2 focus:ring-rainbow-blue focus:ring-offset-2 focus:ring-offset-dark-bg
-                      "
-                      >
-                        ➕ Add New Dog
-                      </Link>
-                    </div>
+                  <div className="flex items-center space-x-3">
+                    <button
+                      onClick={() => fetchDogs()}
+                      disabled={isRefreshing}
+                      className="px-5 py-2.5 bg-surface hover:bg-elevated text-text-primary rounded-xl font-medium transition-all duration-200 disabled:opacity-50 hover:shadow-medium"
+                    >
+                      {isRefreshing ? 'Refreshing...' : 'Refresh'}
+                    </button>
+                    <Link
+                      href="/dogs/add"
+                      className="px-5 py-2.5 bg-accent hover:bg-accent-hover text-white rounded-xl font-medium transition-all duration-200 hover:shadow-glow"
+                    >
+                      Add Dog
+                    </Link>
+                  </div>
+                </div>
+
+                {/* Controls */}
+                <div className="flex items-center justify-between">
+                  <label className="flex items-center space-x-3 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={autoRefresh && autoRefreshInterval > 0}
+                      onChange={(e) => setAutoRefresh(e.target.checked)}
+                      disabled={autoRefreshInterval === 0}
+                      className="w-5 h-5 text-accent bg-surface border-2 border-elevated rounded focus:ring-accent focus:ring-2 disabled:opacity-50"
+                    />
+                    <span className="text-text-secondary">
+                      Auto-refresh{' '}
+                      {autoRefreshInterval === 0
+                        ? '(disabled)'
+                        : `every ${autoRefreshInterval}s`}
+                    </span>
+                  </label>
+
+                  <div className="flex items-center space-x-4">
+                    <span className="text-text-secondary">Sort by</span>
+                    <select
+                      value={sortBy}
+                      onChange={(e) =>
+                        setSortBy(
+                          e.target.value as
+                            | 'name'
+                            | 'breed'
+                            | 'scrapedAt'
+                            | 'updatedAt'
+                        )
+                      }
+                      className="bg-surface border-2 border-elevated rounded-xl px-4 py-2 text-text-primary focus:ring-2 focus:ring-accent focus:border-accent"
+                    >
+                      <option value="scrapedAt">Date Scraped</option>
+                      <option value="updatedAt">Date Updated</option>
+                      <option value="name">Name</option>
+                      <option value="breed">Breed</option>
+                    </select>
+                    <button
+                      onClick={() =>
+                        setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')
+                      }
+                      className="w-10 h-10 bg-surface hover:bg-elevated rounded-xl flex items-center justify-center text-text-secondary hover:text-text-primary transition-all duration-200"
+                      title={`Sort ${
+                        sortOrder === 'asc' ? 'descending' : 'ascending'
+                      }`}
+                    >
+                      {sortOrder === 'asc' ? '↑' : '↓'}
+                    </button>
                   </div>
                 </div>
               </div>
 
-              {/* Dogs Grid */}
+              {/* Dogs Grid with staggered animation */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {sortedDogs.map((dog) => (
-                  <DogCard key={dog.id} dog={dog} onDelete={handleDelete} />
+                {sortedDogs.map((dog, index) => (
+                  <div
+                    key={dog.id}
+                    style={{ animationDelay: `${index * 0.1}s` }}
+                  >
+                    <DogCard dog={dog} onDelete={handleDelete} />
+                  </div>
                 ))}
               </div>
             </>

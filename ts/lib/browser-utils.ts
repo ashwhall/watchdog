@@ -1,5 +1,5 @@
 // lib/browser-utils.ts
-import puppeteer, { Browser, Page, LaunchOptions } from 'puppeteer';
+import puppeteer, { Browser, Page } from 'puppeteer';
 import fs from 'fs';
 
 export interface BrowserConfig {

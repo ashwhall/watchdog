@@ -85,25 +85,9 @@ export default function ViewDog() {
           <title>Watchdog - Loading Dog</title>
         </Head>
         <Layout>
-          <div className="text-center py-16">
-            <div className="relative mx-auto w-32 h-32 mb-8">
-              {/* Rainbow spinning loader */}
-              <div
-                className="absolute inset-0 rounded-full border-4 border-transparent bg-gradient-to-r from-rainbow-red via-rainbow-blue to-rainbow-purple animate-spin"
-                style={{
-                  background:
-                    'conic-gradient(from 0deg, #ff6b6b, #ffa726, #ffeb3b, #66bb6a, #42a5f5, #7e57c2, #ab47bc, #ff6b6b)',
-                  mask: 'radial-gradient(circle at center, transparent 50%, black 50%)',
-                  WebkitMask:
-                    'radial-gradient(circle at center, transparent 50%, black 50%)',
-                }}
-              ></div>
-              <div className="absolute inset-2 bg-dark-bg rounded-full"></div>
-              <div className="absolute inset-0 flex items-center justify-center text-4xl">
-                🐕
-              </div>
-            </div>
-            <p className="text-xl rainbow-text font-bold">
+          <div className="text-center py-20">
+            <div className="w-12 h-12 mx-auto mb-6 border-2 border-accent border-t-transparent rounded-full animate-spin"></div>
+            <p className="text-text-secondary text-lg">
               Loading dog details...
             </p>
           </div>
@@ -119,31 +103,21 @@ export default function ViewDog() {
           <title>Watchdog - Error</title>
         </Head>
         <Layout>
-          <div className="text-center py-16">
-            <div className="text-6xl mb-6">😞</div>
-            <div className="text-rainbow-red text-xl mb-6 font-bold">
-              Error: {error}
+          <div className="text-center py-20">
+            <div className="w-20 h-20 mx-auto mb-6 bg-error rounded-full flex items-center justify-center text-2xl">
+              ⚠️
             </div>
+            <div className="text-error text-xl mb-6 font-semibold">{error}</div>
             <div className="space-x-4">
               <button
                 onClick={() => fetchDog(id as string)}
-                className="
-                px-6 py-3 bg-gradient-to-r from-rainbow-blue to-rainbow-indigo 
-                text-white rounded-lg font-bold transform transition-all duration-300
-                hover:scale-105 hover:shadow-lg hover:shadow-rainbow-blue/25
-                focus:outline-none focus:ring-2 focus:ring-rainbow-blue focus:ring-offset-2 focus:ring-offset-dark-bg
-              "
+                className="px-6 py-3 bg-accent text-white rounded-2xl font-medium hover:bg-accent-hover transition-all duration-200 hover:shadow-glow"
               >
                 Try Again
               </button>
               <Link
                 href="/"
-                className="
-                px-6 py-3 bg-gradient-to-r from-dark-elevated to-dark-border
-                text-white rounded-lg font-bold transform transition-all duration-300
-                hover:scale-105 hover:shadow-lg
-                focus:outline-none focus:ring-2 focus:ring-dark-border focus:ring-offset-2 focus:ring-offset-dark-bg
-              "
+                className="px-6 py-3 bg-surface hover:bg-elevated text-text-primary rounded-2xl font-medium transition-all duration-200 hover:shadow-medium"
               >
                 Back to Home
               </Link>
@@ -163,17 +137,12 @@ export default function ViewDog() {
         <Layout>
           <div className="text-center py-16">
             <div className="text-6xl mb-6">🐕</div>
-            <div className="text-dark-text-secondary text-xl mb-6">
+            <div className="text-text-secondary text-xl mb-6">
               Dog not found
             </div>
             <Link
               href="/"
-              className="
-              px-6 py-3 bg-gradient-to-r from-rainbow-blue to-rainbow-indigo
-              text-white rounded-lg font-bold transform transition-all duration-300
-              hover:scale-105 hover:shadow-lg hover:shadow-rainbow-blue/25
-              focus:outline-none focus:ring-2 focus:ring-rainbow-blue focus:ring-offset-2 focus:ring-offset-dark-bg
-            "
+              className="px-6 py-3 bg-accent text-white rounded-2xl font-medium hover:bg-accent-hover transition-all duration-200 hover:shadow-glow"
             >
               Back to Home
             </Link>
@@ -191,14 +160,11 @@ export default function ViewDog() {
       <Layout>
         <div className="max-w-4xl mx-auto">
           {/* Header with navigation */}
-          <div className="mb-8">
-            <div className="flex items-center justify-between mb-6">
+          <div className="glass rounded-3xl p-6 mb-8">
+            <div className="flex items-center justify-between">
               <Link
                 href="/"
-                className="
-                flex items-center space-x-2 text-rainbow-blue hover:text-white 
-                font-medium transform transition-all duration-300 hover:scale-105
-              "
+                className="flex items-center space-x-2 text-accent hover:text-accent-hover font-medium transition-all duration-200"
               >
                 <span>←</span>
                 <span>Back to Dashboard</span>
@@ -206,23 +172,13 @@ export default function ViewDog() {
               <div className="flex space-x-4">
                 <Link
                   href={`/dogs/edit/${dog.id}`}
-                  className="
-                  px-6 py-3 bg-gradient-to-r from-rainbow-green to-rainbow-blue
-                  text-white rounded-lg font-bold transform transition-all duration-300
-                  hover:scale-105 hover:shadow-lg hover:shadow-rainbow-blue/25
-                  focus:outline-none focus:ring-2 focus:ring-rainbow-blue focus:ring-offset-2 focus:ring-offset-dark-bg
-                "
+                  className="px-6 py-3 bg-accent text-white rounded-2xl font-medium hover:bg-accent-hover transition-all duration-200 hover:shadow-glow"
                 >
                   ✏️ Edit Dog
                 </Link>
                 <button
                   onClick={handleDelete}
-                  className="
-                  px-6 py-3 bg-gradient-to-r from-rainbow-red to-rainbow-pink
-                  text-white rounded-lg font-bold transform transition-all duration-300
-                  hover:scale-105 hover:shadow-lg hover:shadow-rainbow-red/25
-                  focus:outline-none focus:ring-2 focus:ring-rainbow-red focus:ring-offset-2 focus:ring-offset-dark-bg
-                "
+                  className="px-6 py-3 bg-error text-white rounded-2xl font-medium hover:bg-red-600 transition-all duration-200 hover:shadow-glow"
                 >
                   🗑️ Delete Dog
                 </button>
@@ -230,123 +186,113 @@ export default function ViewDog() {
             </div>
           </div>
 
-          {/* Main content with rainbow border */}
-          <div className="group relative">
-            <div className="absolute -inset-0.5 bg-gradient-to-r from-rainbow-red via-rainbow-blue to-rainbow-purple rounded-xl blur opacity-30 group-hover:opacity-60 transition duration-500"></div>
+          {/* Main content with glassmorphism */}
+          <div className="glass rounded-3xl overflow-hidden">
+            {/* Image section */}
+            <div
+              className="relative h-96 w-full cursor-pointer overflow-hidden group/image"
+              onClick={() => setIsModalOpen(true)}
+            >
+              <Image
+                src={dog.imageUrl}
+                alt={dog.name}
+                fill
+                className="object-cover transition-transform duration-500 group-hover/image:scale-105"
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
+                priority
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-transparent opacity-0 group-hover/image:opacity-100 transition-opacity duration-300"></div>
 
-            <div className="relative bg-dark-surface rounded-xl shadow-2xl overflow-hidden">
-              {/* Image section */}
-              <div
-                className="relative h-96 w-full cursor-pointer overflow-hidden group/image"
-                onClick={() => setIsModalOpen(true)}
-              >
-                <Image
-                  src={dog.imageUrl}
-                  alt={dog.name}
-                  fill
-                  className="object-cover transition-transform duration-500 group-hover/image:scale-105"
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
-                  priority
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-dark-bg/60 via-transparent to-transparent opacity-0 group-hover/image:opacity-100 transition-opacity duration-300"></div>
+              {/* Click to enlarge hint */}
+              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/image:opacity-100 transition-opacity duration-300">
+                <div className="glass px-4 py-2 rounded-2xl text-text-primary font-medium">
+                  🔍 Click to enlarge
+                </div>
+              </div>
+            </div>
 
-                {/* Click to enlarge hint */}
-                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/image:opacity-100 transition-opacity duration-300">
-                  <div className="bg-dark-surface/80 backdrop-blur-sm px-4 py-2 rounded-lg text-white font-medium">
-                    🔍 Click to enlarge
-                  </div>
+            {/* Details section */}
+            <div className="p-8">
+              <div className="mb-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h1 className="text-4xl font-bold text-text-primary">
+                    {dog.name}
+                  </h1>
+                  <span className="px-4 py-2 bg-accent text-white rounded-full text-sm font-medium">
+                    {dog.breed || 'Unknown Breed'}
+                  </span>
                 </div>
               </div>
 
-              {/* Details section */}
-              <div className="p-8">
-                <div className="mb-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <h1 className="text-4xl font-bold text-white">
-                      {dog.name}
-                    </h1>
-                    <span className="px-4 py-2 rounded-full text-sm font-bold text-white bg-gradient-to-r from-rainbow-blue to-rainbow-indigo shadow-lg">
-                      {dog.breed || 'Unknown Breed'}
-                    </span>
-                  </div>
-                </div>
+              {/* Description */}
+              <div className="mb-8">
+                <h2 className="text-2xl font-bold text-accent mb-4">
+                  Description
+                </h2>
+                <p className="text-text-secondary leading-relaxed whitespace-pre-wrap text-lg">
+                  {dog.description}
+                </p>
+              </div>
 
-                {/* Description */}
-                <div className="mb-8">
-                  <h2 className="text-2xl font-bold rainbow-text mb-4">
-                    Description
-                  </h2>
-                  <p className="text-dark-text-secondary leading-relaxed whitespace-pre-wrap text-lg">
-                    {dog.description}
+              {/* Metadata */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div className="glass-light p-6 rounded-2xl">
+                  <h3 className="text-sm font-bold text-accent mb-3 flex items-center space-x-2">
+                    <span>📅</span>
+                    <span>Scraped Date</span>
+                  </h3>
+                  <p className="text-text-primary text-lg">
+                    {new Date(dog.scrapedAt).toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    })}
                   </p>
                 </div>
-
-                {/* Metadata */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                  <div className="bg-dark-elevated/50 backdrop-blur-sm p-6 rounded-xl border border-dark-border">
-                    <h3 className="text-sm font-bold text-rainbow-green mb-3 flex items-center space-x-2">
-                      <span>📅</span>
-                      <span>Scraped Date</span>
-                    </h3>
-                    <p className="text-white text-lg">
-                      {new Date(dog.scrapedAt).toLocaleDateString('en-US', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit',
-                      })}
-                    </p>
-                  </div>
-                  <div className="bg-dark-elevated/50 backdrop-blur-sm p-6 rounded-xl border border-dark-border">
-                    <h3 className="text-sm font-bold text-rainbow-blue mb-3 flex items-center space-x-2">
-                      <span>🔄</span>
-                      <span>Last Updated</span>
-                    </h3>
-                    <p className="text-white text-lg">
-                      {new Date(dog.updatedAt).toLocaleDateString('en-US', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit',
-                      })}
-                    </p>
-                  </div>
+                <div className="glass-light p-6 rounded-2xl">
+                  <h3 className="text-sm font-bold text-accent mb-3 flex items-center space-x-2">
+                    <span>🔄</span>
+                    <span>Last Updated</span>
+                  </h3>
+                  <p className="text-text-primary text-lg">
+                    {new Date(dog.updatedAt).toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    })}
+                  </p>
                 </div>
+              </div>
 
-                {/* Original post link */}
-                <div className="border-t border-dark-border pt-8">
-                  <a
-                    href={dog.postUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="
-                  inline-flex items-center space-x-2 px-6 py-3 
-                  bg-gradient-to-r from-rainbow-green to-rainbow-blue
-                  text-white rounded-lg font-bold transform transition-all duration-300
-                  hover:scale-105 hover:shadow-lg hover:shadow-rainbow-green/25
-                  focus:outline-none focus:ring-2 focus:ring-rainbow-green focus:ring-offset-2 focus:ring-offset-dark-surface
-                "
+              {/* Original post link */}
+              <div className="border-t border-border pt-8">
+                <a
+                  href={dog.postUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center space-x-2 px-6 py-3 bg-accent text-white rounded-2xl font-medium hover:bg-accent-hover transition-all duration-200 hover:shadow-glow"
+                >
+                  <span>🔗</span>
+                  <span>View Original Post</span>
+                  <svg
+                    className="h-4 w-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
                   >
-                    <span>🔗</span>
-                    <span>View Original Post</span>
-                    <svg
-                      className="h-4 w-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-                      />
-                    </svg>
-                  </a>
-                </div>
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                    />
+                  </svg>
+                </a>
               </div>
             </div>
           </div>
@@ -360,10 +306,10 @@ export default function ViewDog() {
               <div className="relative max-w-7xl max-h-full">
                 <button
                   onClick={() => setIsModalOpen(false)}
-                  className="absolute top-4 right-4 z-10 bg-dark-elevated/90 hover:bg-dark-surface backdrop-blur-sm rounded-full p-2 transition-all duration-200 hover-glow"
+                  className="absolute top-4 right-4 z-10 glass hover:glass-hover rounded-full p-2 transition-all duration-200"
                 >
                   <svg
-                    className="h-6 w-6 text-white"
+                    className="h-6 w-6 text-text-primary"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"

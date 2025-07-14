@@ -83,25 +83,29 @@ export default function ScraperAdmin() {
       </Head>
       <Layout>
         <div className="max-w-4xl mx-auto p-6">
-          <h1 className="text-3xl font-bold mb-8 rainbow-text">
-            🔧 Dog Scraper Admin
-          </h1>
+          <div className="glass rounded-3xl p-6 mb-8">
+            <h1 className="text-3xl font-bold text-text-primary">
+              🔧 Dog Scraper Admin
+            </h1>
+          </div>
 
           {/* Controls */}
-          <div className="bg-dark-surface rounded-lg shadow-2xl border border-dark-border p-6 mb-6">
-            <h2 className="text-xl font-semibold mb-4 text-white">Controls</h2>
+          <div className="glass rounded-3xl p-6 mb-6">
+            <h2 className="text-xl font-semibold mb-4 text-text-primary">
+              Controls
+            </h2>
             <div className="flex gap-4">
               <button
                 onClick={runScraper}
                 disabled={isLoading}
-                className="bg-gradient-to-r from-rainbow-blue to-rainbow-purple hover:from-rainbow-purple hover:to-rainbow-pink disabled:opacity-50 text-white px-6 py-2 rounded-lg font-medium transition-all duration-300 hover:scale-105"
+                className="px-6 py-3 bg-accent text-white rounded-2xl font-medium hover:bg-accent-hover disabled:opacity-50 transition-all duration-200 hover:shadow-glow"
               >
                 {isLoading ? 'Scraping...' : 'Start Scraping'}
               </button>
 
               <button
                 onClick={fetchStatus}
-                className="bg-gradient-to-r from-rainbow-green to-rainbow-cyan hover:from-rainbow-cyan hover:to-rainbow-blue text-white px-6 py-2 rounded-lg font-medium transition-all duration-300 hover:scale-105"
+                className="px-6 py-3 bg-surface hover:bg-elevated text-text-primary rounded-2xl font-medium transition-all duration-200 hover:shadow-medium"
               >
                 Refresh Status
               </button>
@@ -110,24 +114,24 @@ export default function ScraperAdmin() {
 
           {/* Last Result */}
           {lastResult && (
-            <div className="bg-dark-surface rounded-lg shadow-2xl border border-dark-border p-6 mb-6">
-              <h2 className="text-xl font-semibold mb-4 text-white">
+            <div className="glass rounded-3xl p-6 mb-6">
+              <h2 className="text-xl font-semibold mb-4 text-text-primary">
                 Last Scraping Result
               </h2>
               <div
-                className={`p-4 rounded-lg ${
+                className={`p-4 rounded-2xl ${
                   lastResult.success
-                    ? 'bg-dark-elevated border border-rainbow-green text-rainbow-green'
-                    : 'bg-dark-elevated border border-rainbow-red text-rainbow-red'
+                    ? 'bg-green-900/20 border border-green-500/30 text-green-400'
+                    : 'bg-red-900/20 border border-red-500/30 text-red-400'
                 }`}
               >
                 <p className="font-medium">{lastResult.message}</p>
                 {lastResult.success && lastResult.results && (
                   <div className="mt-2">
-                    <p className="text-sm text-dark-text-secondary">
+                    <p className="text-sm text-text-secondary">
                       Results by site:
                     </p>
-                    <ul className="text-sm ml-4 text-dark-text-secondary">
+                    <ul className="text-sm ml-4 text-text-secondary">
                       {Object.entries(lastResult.results).map(
                         ([site, count]) => (
                           <li key={site}>
@@ -144,40 +148,36 @@ export default function ScraperAdmin() {
 
           {/* Status */}
           {status && (
-            <div className="bg-dark-surface rounded-lg shadow-2xl border border-dark-border p-6 mb-6">
-              <h2 className="text-xl font-semibold mb-4 text-white">
+            <div className="glass rounded-3xl p-6 mb-6">
+              <h2 className="text-xl font-semibold mb-4 text-text-primary">
                 Database Statistics
               </h2>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="text-center p-4 bg-dark-elevated border border-rainbow-blue rounded-lg">
-                  <div className="text-2xl font-bold text-rainbow-blue">
+                <div className="text-center p-4 glass-light rounded-2xl">
+                  <div className="text-2xl font-bold text-accent">
                     {status.stats.total}
                   </div>
-                  <div className="text-sm text-dark-text-secondary">
-                    Total Dogs
-                  </div>
+                  <div className="text-sm text-text-secondary">Total Dogs</div>
                 </div>
-                <div className="text-center p-4 bg-dark-elevated border border-rainbow-green rounded-lg">
-                  <div className="text-2xl font-bold text-rainbow-green">
+                <div className="text-center p-4 glass-light rounded-2xl">
+                  <div className="text-2xl font-bold text-green-400">
                     {status.stats.classified}
                   </div>
-                  <div className="text-sm text-dark-text-secondary">
-                    Classified
-                  </div>
+                  <div className="text-sm text-text-secondary">Classified</div>
                 </div>
-                <div className="text-center p-4 bg-dark-elevated border border-rainbow-yellow rounded-lg">
-                  <div className="text-2xl font-bold text-rainbow-yellow">
+                <div className="text-center p-4 glass-light rounded-2xl">
+                  <div className="text-2xl font-bold text-amber-400">
                     {status.stats.unclassified}
                   </div>
-                  <div className="text-sm text-dark-text-secondary">
+                  <div className="text-sm text-text-secondary">
                     Unclassified
                   </div>
                 </div>
-                <div className="text-center p-4 bg-dark-elevated border border-rainbow-purple rounded-lg">
-                  <div className="text-2xl font-bold text-rainbow-purple">
+                <div className="text-center p-4 glass-light rounded-2xl">
+                  <div className="text-2xl font-bold text-purple-400">
                     {status.stats.scrapedToday}
                   </div>
-                  <div className="text-sm text-dark-text-secondary">
+                  <div className="text-sm text-text-secondary">
                     Scraped Today
                   </div>
                 </div>
@@ -187,32 +187,34 @@ export default function ScraperAdmin() {
 
           {/* Recent Dogs */}
           {status && status.recentDogs.length > 0 && (
-            <div className="bg-dark-surface rounded-lg shadow-2xl border border-dark-border p-6">
-              <h2 className="text-xl font-semibold mb-4 text-white">
+            <div className="glass rounded-3xl p-6">
+              <h2 className="text-xl font-semibold mb-4 text-text-primary">
                 Recently Scraped Dogs
               </h2>
               <div className="grid gap-4">
                 {status.recentDogs.map((dog) => (
                   <div
                     key={dog.id}
-                    className="flex items-center space-x-4 p-4 border border-dark-border rounded-lg bg-dark-elevated hover:bg-dark-surface transition-colors"
+                    className="flex items-center space-x-4 p-4 glass-light rounded-2xl hover:bg-card/50 transition-colors"
                   >
                     <Image
                       src={dog.imageUrl}
                       alt={dog.name}
                       width={64}
                       height={64}
-                      className="w-16 h-16 object-cover rounded"
+                      className="w-16 h-16 object-cover rounded-xl"
                       onError={(e) => {
                         e.currentTarget.src = '/placeholder-dog.jpg';
                       }}
                     />
                     <div className="flex-1">
-                      <h3 className="font-medium text-white">{dog.name}</h3>
-                      <p className="text-sm text-dark-text-secondary">
+                      <h3 className="font-medium text-text-primary">
+                        {dog.name}
+                      </h3>
+                      <p className="text-sm text-text-secondary">
                         {dog.breed || 'Unclassified'}
                       </p>
-                      <p className="text-xs text-dark-text-secondary">
+                      <p className="text-xs text-text-tertiary">
                         Scraped: {new Date(dog.scrapedAt).toLocaleDateString()}
                       </p>
                     </div>
@@ -220,7 +222,7 @@ export default function ScraperAdmin() {
                       href={dog.postUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-rainbow-blue hover:text-rainbow-cyan text-sm transition-colors"
+                      className="text-accent hover:text-accent-hover text-sm transition-colors"
                     >
                       View Post →
                     </a>
@@ -232,7 +234,7 @@ export default function ScraperAdmin() {
 
           {!status && (
             <div className="text-center py-8">
-              <p className="text-dark-text-secondary">
+              <p className="text-text-secondary">
                 Click &ldquo;Refresh Status&rdquo; to load data
               </p>
             </div>

@@ -394,9 +394,11 @@ export default function Settings() {
       </Head>
       <Layout>
         <div className="max-w-2xl mx-auto">
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold rainbow-text">⚙️ Settings</h1>
-            <p className="text-dark-text-secondary text-lg">
+          <div className="glass rounded-3xl p-6 mb-8">
+            <h1 className="text-3xl font-bold text-text-primary">
+              ⚙️ Settings
+            </h1>
+            <p className="text-text-secondary text-lg">
               Configure your dog watchdog preferences
             </p>
           </div>
@@ -433,301 +435,295 @@ export default function Settings() {
             </div>
           )}
 
-          <div className="group relative">
-            <div className="absolute -inset-0.5 bg-gradient-to-r from-rainbow-indigo via-rainbow-purple to-rainbow-pink rounded-xl blur opacity-30 group-hover:opacity-60 transition duration-500"></div>
+          <div className="glass rounded-3xl p-8">
+            <h2 className="text-xl font-bold text-text-primary mb-6 flex items-center space-x-2">
+              <span>🔧</span>
+              <span>Application Settings</span>
+            </h2>
 
-            <div className="relative bg-dark-surface rounded-xl shadow-2xl p-8 border border-dark-border">
-              <h2 className="text-xl font-bold text-white mb-6 flex items-center space-x-2">
-                <span>🔧</span>
-                <span>Application Settings</span>
-              </h2>
-
-              <div className="space-y-6">
-                {/* Scraping Configuration */}
+            <div className="space-y-6">
+              {/* Scraping Configuration */}
+              <div>
+                <h3 className="text-md font-medium text-white mb-3">
+                  Scraping Configuration
+                </h3>
                 <div>
-                  <h3 className="text-md font-medium text-white mb-3">
-                    Scraping Configuration
-                  </h3>
+                  <label
+                    htmlFor="scrapeInterval"
+                    className="block text-sm font-medium text-dark-text-primary mb-2"
+                  >
+                    Scrape Interval
+                  </label>
+                  <div className="flex items-center space-x-4">
+                    <select
+                      id="scrapeInterval"
+                      value={scrapeInterval}
+                      onChange={(e) => setScrapeInterval(e.target.value)}
+                      className="block w-48 px-3 py-2 bg-dark-elevated border border-dark-border rounded-md text-white focus:outline-none focus:ring-2 focus:ring-rainbow-blue focus:border-rainbow-blue"
+                    >
+                      <option value="15">15 minutes</option>
+                      <option value="30">30 minutes</option>
+                      <option value="60">1 hour</option>
+                      <option value="120">2 hours</option>
+                      <option value="240">4 hours</option>
+                      <option value="480">8 hours</option>
+                      <option value="720">12 hours</option>
+                      <option value="1440">24 hours</option>
+                    </select>
+                    <span className="text-sm text-dark-text-secondary">
+                      Currently set to {formatIntervalText(scrapeInterval)}
+                    </span>
+                  </div>
+                  <p className="mt-1 text-sm text-dark-text-secondary">
+                    How often the system should check for new dogs
+                  </p>
+                </div>
+              </div>
+
+              {/* Auto-refresh Configuration */}
+              <div className="border-t border-dark-border pt-6">
+                <h3 className="text-md font-medium text-white mb-3">
+                  Dashboard Settings
+                </h3>
+                <div>
+                  <label
+                    htmlFor="autoRefreshInterval"
+                    className="block text-sm font-medium text-dark-text-primary mb-2"
+                  >
+                    Auto-refresh Interval
+                  </label>
+                  <div className="flex items-center space-x-4">
+                    <select
+                      id="autoRefreshInterval"
+                      value={autoRefreshInterval}
+                      onChange={(e) => setAutoRefreshInterval(e.target.value)}
+                      className="block w-48 px-3 py-2 bg-dark-elevated border border-dark-border rounded-md text-white focus:outline-none focus:ring-2 focus:ring-rainbow-blue focus:border-rainbow-blue"
+                    >
+                      <option value="10">10 seconds</option>
+                      <option value="15">15 seconds</option>
+                      <option value="30">30 seconds</option>
+                      <option value="60">1 minute</option>
+                      <option value="120">2 minutes</option>
+                      <option value="300">5 minutes</option>
+                      <option value="600">10 minutes</option>
+                      <option value="0">Disabled</option>
+                    </select>
+                    <span className="text-sm text-dark-text-secondary">
+                      Currently set to{' '}
+                      {autoRefreshInterval === '0'
+                        ? 'Disabled'
+                        : formatSecondsText(autoRefreshInterval)}
+                    </span>
+                  </div>
+                  <p className="mt-1 text-sm text-dark-text-secondary">
+                    How often the dashboard should automatically refresh to show
+                    new dogs
+                  </p>
+                </div>
+              </div>
+
+              {/* Facebook Credentials Configuration */}
+              <div className="border-t border-dark-border pt-6">
+                <h3 className="text-md font-medium text-white mb-3">
+                  Facebook Credentials
+                </h3>
+                <div className="space-y-4">
                   <div>
                     <label
-                      htmlFor="scrapeInterval"
+                      htmlFor="facebookEmail"
                       className="block text-sm font-medium text-dark-text-primary mb-2"
                     >
-                      Scrape Interval
+                      Facebook Email
                     </label>
-                    <div className="flex items-center space-x-4">
-                      <select
-                        id="scrapeInterval"
-                        value={scrapeInterval}
-                        onChange={(e) => setScrapeInterval(e.target.value)}
-                        className="block w-48 px-3 py-2 bg-dark-elevated border border-dark-border rounded-md text-white focus:outline-none focus:ring-2 focus:ring-rainbow-blue focus:border-rainbow-blue"
-                      >
-                        <option value="15">15 minutes</option>
-                        <option value="30">30 minutes</option>
-                        <option value="60">1 hour</option>
-                        <option value="120">2 hours</option>
-                        <option value="240">4 hours</option>
-                        <option value="480">8 hours</option>
-                        <option value="720">12 hours</option>
-                        <option value="1440">24 hours</option>
-                      </select>
-                      <span className="text-sm text-dark-text-secondary">
-                        Currently set to {formatIntervalText(scrapeInterval)}
-                      </span>
-                    </div>
+                    <input
+                      type="email"
+                      id="facebookEmail"
+                      value={facebookEmail}
+                      onChange={(e) => setFacebookEmail(e.target.value)}
+                      placeholder="Enter your Facebook email"
+                      className="block w-full px-3 py-2 bg-dark-elevated border border-dark-border rounded-md text-white placeholder-dark-text-secondary focus:outline-none focus:ring-2 focus:ring-rainbow-blue focus:border-rainbow-blue"
+                    />
                     <p className="mt-1 text-sm text-dark-text-secondary">
-                      How often the system should check for new dogs
+                      Email address for your Facebook account
                     </p>
                   </div>
-                </div>
-
-                {/* Auto-refresh Configuration */}
-                <div className="border-t border-dark-border pt-6">
-                  <h3 className="text-md font-medium text-white mb-3">
-                    Dashboard Settings
-                  </h3>
                   <div>
                     <label
-                      htmlFor="autoRefreshInterval"
+                      htmlFor="facebookPassword"
                       className="block text-sm font-medium text-dark-text-primary mb-2"
                     >
-                      Auto-refresh Interval
+                      Facebook Password
                     </label>
-                    <div className="flex items-center space-x-4">
-                      <select
-                        id="autoRefreshInterval"
-                        value={autoRefreshInterval}
-                        onChange={(e) => setAutoRefreshInterval(e.target.value)}
-                        className="block w-48 px-3 py-2 bg-dark-elevated border border-dark-border rounded-md text-white focus:outline-none focus:ring-2 focus:ring-rainbow-blue focus:border-rainbow-blue"
-                      >
-                        <option value="10">10 seconds</option>
-                        <option value="15">15 seconds</option>
-                        <option value="30">30 seconds</option>
-                        <option value="60">1 minute</option>
-                        <option value="120">2 minutes</option>
-                        <option value="300">5 minutes</option>
-                        <option value="600">10 minutes</option>
-                        <option value="0">Disabled</option>
-                      </select>
-                      <span className="text-sm text-dark-text-secondary">
-                        Currently set to{' '}
-                        {autoRefreshInterval === '0'
-                          ? 'Disabled'
-                          : formatSecondsText(autoRefreshInterval)}
-                      </span>
-                    </div>
+                    <input
+                      type="password"
+                      id="facebookPassword"
+                      value={facebookPassword}
+                      onChange={(e) => setFacebookPassword(e.target.value)}
+                      placeholder="Enter your Facebook password"
+                      className="block w-full px-3 py-2 bg-dark-elevated border border-dark-border rounded-md text-white placeholder-dark-text-secondary focus:outline-none focus:ring-2 focus:ring-rainbow-blue focus:border-rainbow-blue"
+                    />
                     <p className="mt-1 text-sm text-dark-text-secondary">
-                      How often the dashboard should automatically refresh to
-                      show new dogs
+                      Password is encrypted and stored securely. Leave blank to
+                      keep existing password.
                     </p>
-                  </div>
-                </div>
-
-                {/* Facebook Credentials Configuration */}
-                <div className="border-t border-dark-border pt-6">
-                  <h3 className="text-md font-medium text-white mb-3">
-                    Facebook Credentials
-                  </h3>
-                  <div className="space-y-4">
-                    <div>
-                      <label
-                        htmlFor="facebookEmail"
-                        className="block text-sm font-medium text-dark-text-primary mb-2"
-                      >
-                        Facebook Email
-                      </label>
-                      <input
-                        type="email"
-                        id="facebookEmail"
-                        value={facebookEmail}
-                        onChange={(e) => setFacebookEmail(e.target.value)}
-                        placeholder="Enter your Facebook email"
-                        className="block w-full px-3 py-2 bg-dark-elevated border border-dark-border rounded-md text-white placeholder-dark-text-secondary focus:outline-none focus:ring-2 focus:ring-rainbow-blue focus:border-rainbow-blue"
-                      />
-                      <p className="mt-1 text-sm text-dark-text-secondary">
-                        Email address for your Facebook account
-                      </p>
-                    </div>
-                    <div>
-                      <label
-                        htmlFor="facebookPassword"
-                        className="block text-sm font-medium text-dark-text-primary mb-2"
-                      >
-                        Facebook Password
-                      </label>
-                      <input
-                        type="password"
-                        id="facebookPassword"
-                        value={facebookPassword}
-                        onChange={(e) => setFacebookPassword(e.target.value)}
-                        placeholder="Enter your Facebook password"
-                        className="block w-full px-3 py-2 bg-dark-elevated border border-dark-border rounded-md text-white placeholder-dark-text-secondary focus:outline-none focus:ring-2 focus:ring-rainbow-blue focus:border-rainbow-blue"
-                      />
-                      <p className="mt-1 text-sm text-dark-text-secondary">
-                        Password is encrypted and stored securely. Leave blank
-                        to keep existing password.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Telegram Notifications Configuration */}
-                <div className="border-t border-dark-border pt-6">
-                  <h3 className="text-md font-medium text-white mb-3">
-                    Telegram Notifications
-                  </h3>
-                  <div className="space-y-4">
-                    <div>
-                      <label className="flex items-center">
-                        <input
-                          type="checkbox"
-                          checked={telegramNotificationsEnabled}
-                          onChange={(e) =>
-                            setTelegramNotificationsEnabled(e.target.checked)
-                          }
-                          className="h-4 w-4 text-rainbow-blue focus:ring-rainbow-blue border-dark-border rounded bg-dark-elevated"
-                        />
-                        <span className="ml-2 text-sm font-medium text-dark-text-primary">
-                          Enable Telegram notifications for new dogs
-                        </span>
-                      </label>
-                      <p className="mt-1 text-sm text-dark-text-secondary">
-                        Get instant notifications when new dogs are found during
-                        scraping
-                      </p>
-                    </div>
-
-                    {telegramNotificationsEnabled && (
-                      <>
-                        <div>
-                          <label
-                            htmlFor="telegramBotToken"
-                            className="block text-sm font-medium text-dark-text-primary mb-2"
-                          >
-                            Bot Token
-                          </label>
-                          <input
-                            type="password"
-                            id="telegramBotToken"
-                            value={telegramBotToken}
-                            onChange={(e) =>
-                              setTelegramBotToken(e.target.value)
-                            }
-                            placeholder="123456789:ABC-DEF1234ghijklmnop..."
-                            className="block w-full px-3 py-2 bg-dark-elevated border border-dark-border rounded-md text-white placeholder-dark-text-secondary focus:outline-none focus:ring-2 focus:ring-rainbow-blue focus:border-rainbow-blue"
-                          />
-                          <p className="mt-1 text-sm text-dark-text-secondary">
-                            Get this from @BotFather on Telegram.
-                            <a
-                              href="https://core.telegram.org/bots#creating-a-new-bot"
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-rainbow-blue hover:text-rainbow-cyan ml-1 transition-colors"
-                            >
-                              Learn how →
-                            </a>
-                          </p>
-                        </div>
-                        <div>
-                          <label
-                            htmlFor="telegramChatId"
-                            className="block text-sm font-medium text-dark-text-primary mb-2"
-                          >
-                            Chat ID
-                          </label>
-                          <input
-                            type="text"
-                            id="telegramChatId"
-                            value={telegramChatId}
-                            onChange={(e) => setTelegramChatId(e.target.value)}
-                            placeholder="123456789 or -123456789 for groups"
-                            className="block w-full px-3 py-2 bg-dark-elevated border border-dark-border rounded-md text-white placeholder-dark-text-secondary focus:outline-none focus:ring-2 focus:ring-rainbow-blue focus:border-rainbow-blue"
-                          />
-                          <p className="mt-1 text-sm text-dark-text-secondary">
-                            Your personal chat ID or group chat ID. Send a
-                            message to your bot first, then visit:
-                            <code className="bg-dark-elevated px-1 rounded text-xs text-rainbow-cyan ml-1">
-                              https://api.telegram.org/bot&lt;YOUR_BOT_TOKEN&gt;/getUpdates
-                            </code>
-                          </p>
-                        </div>
-                      </>
-                    )}
                   </div>
                 </div>
               </div>
 
-              <div className="mt-6 pt-4 border-t border-dark-border flex flex-col sm:flex-row gap-3">
-                <button
-                  onClick={saveSettings}
-                  disabled={saving}
-                  className="group relative px-6 py-3 bg-gradient-to-r from-rainbow-blue to-rainbow-purple text-white rounded-lg hover:from-rainbow-purple hover:to-rainbow-pink disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center transform transition-all duration-300 hover:scale-105 active:scale-95"
-                >
-                  {saving ? (
+              {/* Telegram Notifications Configuration */}
+              <div className="border-t border-dark-border pt-6">
+                <h3 className="text-md font-medium text-white mb-3">
+                  Telegram Notifications
+                </h3>
+                <div className="space-y-4">
+                  <div>
+                    <label className="flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={telegramNotificationsEnabled}
+                        onChange={(e) =>
+                          setTelegramNotificationsEnabled(e.target.checked)
+                        }
+                        className="h-4 w-4 text-rainbow-blue focus:ring-rainbow-blue border-dark-border rounded bg-dark-elevated"
+                      />
+                      <span className="ml-2 text-sm font-medium text-dark-text-primary">
+                        Enable Telegram notifications for new dogs
+                      </span>
+                    </label>
+                    <p className="mt-1 text-sm text-dark-text-secondary">
+                      Get instant notifications when new dogs are found during
+                      scraping
+                    </p>
+                  </div>
+
+                  {telegramNotificationsEnabled && (
                     <>
-                      <svg
-                        className="animate-spin -ml-1 mr-2 h-4 w-4"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                      >
-                        <circle
-                          className="opacity-25"
-                          cx="12"
-                          cy="12"
-                          r="10"
-                          stroke="currentColor"
-                          strokeWidth="4"
-                        ></circle>
-                        <path
-                          className="opacity-75"
-                          fill="currentColor"
-                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                        ></path>
-                      </svg>
-                      Saving...
-                    </>
-                  ) : (
-                    'Save Settings'
-                  )}
-                </button>
-
-                {telegramNotificationsEnabled &&
-                  telegramBotToken &&
-                  telegramChatId && (
-                    <button
-                      onClick={testTelegramConnection}
-                      disabled={testingTelegram || saving}
-                      className="group relative px-6 py-3 bg-gradient-to-r from-rainbow-green to-rainbow-cyan text-white rounded-lg hover:from-rainbow-cyan hover:to-rainbow-blue disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center transform transition-all duration-300 hover:scale-105 active:scale-95"
-                    >
-                      {testingTelegram ? (
-                        <>
-                          <svg
-                            className="animate-spin -ml-1 mr-2 h-4 w-4"
-                            fill="none"
-                            viewBox="0 0 24 24"
+                      <div>
+                        <label
+                          htmlFor="telegramBotToken"
+                          className="block text-sm font-medium text-dark-text-primary mb-2"
+                        >
+                          Bot Token
+                        </label>
+                        <input
+                          type="password"
+                          id="telegramBotToken"
+                          value={telegramBotToken}
+                          onChange={(e) => setTelegramBotToken(e.target.value)}
+                          placeholder="123456789:ABC-DEF1234ghijklmnop..."
+                          className="block w-full px-3 py-2 bg-dark-elevated border border-dark-border rounded-md text-white placeholder-dark-text-secondary focus:outline-none focus:ring-2 focus:ring-rainbow-blue focus:border-rainbow-blue"
+                        />
+                        <p className="mt-1 text-sm text-dark-text-secondary">
+                          Get this from @BotFather on Telegram.
+                          <a
+                            href="https://core.telegram.org/bots#creating-a-new-bot"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-rainbow-blue hover:text-rainbow-cyan ml-1 transition-colors"
                           >
-                            <circle
-                              className="opacity-25"
-                              cx="12"
-                              cy="12"
-                              r="10"
-                              stroke="currentColor"
-                              strokeWidth="4"
-                            ></circle>
-                            <path
-                              className="opacity-75"
-                              fill="currentColor"
-                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                            ></path>
-                          </svg>
-                          Testing...
-                        </>
-                      ) : (
-                        '🧪 Test Telegram'
-                      )}
-                    </button>
+                            Learn how →
+                          </a>
+                        </p>
+                      </div>
+                      <div>
+                        <label
+                          htmlFor="telegramChatId"
+                          className="block text-sm font-medium text-dark-text-primary mb-2"
+                        >
+                          Chat ID
+                        </label>
+                        <input
+                          type="text"
+                          id="telegramChatId"
+                          value={telegramChatId}
+                          onChange={(e) => setTelegramChatId(e.target.value)}
+                          placeholder="123456789 or -123456789 for groups"
+                          className="block w-full px-3 py-2 bg-dark-elevated border border-dark-border rounded-md text-white placeholder-dark-text-secondary focus:outline-none focus:ring-2 focus:ring-rainbow-blue focus:border-rainbow-blue"
+                        />
+                        <p className="mt-1 text-sm text-dark-text-secondary">
+                          Your personal chat ID or group chat ID. Send a message
+                          to your bot first, then visit:
+                          <code className="bg-dark-elevated px-1 rounded text-xs text-rainbow-cyan ml-1">
+                            https://api.telegram.org/bot&lt;YOUR_BOT_TOKEN&gt;/getUpdates
+                          </code>
+                        </p>
+                      </div>
+                    </>
                   )}
+                </div>
               </div>
+            </div>
+
+            <div className="mt-6 pt-4 border-t border-dark-border flex flex-col sm:flex-row gap-3">
+              <button
+                onClick={saveSettings}
+                disabled={saving}
+                className="group relative px-6 py-3 bg-gradient-to-r from-rainbow-blue to-rainbow-purple text-white rounded-lg hover:from-rainbow-purple hover:to-rainbow-pink disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center transform transition-all duration-300 hover:scale-105 active:scale-95"
+              >
+                {saving ? (
+                  <>
+                    <svg
+                      className="animate-spin -ml-1 mr-2 h-4 w-4"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
+                    </svg>
+                    Saving...
+                  </>
+                ) : (
+                  'Save Settings'
+                )}
+              </button>
+
+              {telegramNotificationsEnabled &&
+                telegramBotToken &&
+                telegramChatId && (
+                  <button
+                    onClick={testTelegramConnection}
+                    disabled={testingTelegram || saving}
+                    className="group relative px-6 py-3 bg-gradient-to-r from-rainbow-green to-rainbow-cyan text-white rounded-lg hover:from-rainbow-cyan hover:to-rainbow-blue disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center transform transition-all duration-300 hover:scale-105 active:scale-95"
+                  >
+                    {testingTelegram ? (
+                      <>
+                        <svg
+                          className="animate-spin -ml-1 mr-2 h-4 w-4"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                          ></circle>
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                          ></path>
+                        </svg>
+                        Testing...
+                      </>
+                    ) : (
+                      '🧪 Test Telegram'
+                    )}
+                  </button>
+                )}
             </div>
           </div>
         </div>
