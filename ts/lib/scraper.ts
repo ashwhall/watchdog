@@ -31,60 +31,138 @@ export class DogScraper {
     console.log('🚀 Launching browser with config:', {
       headless: this.config.headless,
       executablePath: executablePath || 'default',
+      nodeVersion: process.version,
+      platform: process.platform,
     });
+
+    // Generate a random debugging port to avoid conflicts
+    const debugPort = 9222 + Math.floor(Math.random() * 1000);
 
     const launchOptions = {
       headless: this.config.headless,
-      timeout: 60000, // Increase timeout to 60 seconds
+      timeout: 90000, // Increase timeout to 90 seconds
       args: [
         '--no-sandbox',
         '--disable-setuid-sandbox',
-        '--disable-blink-features=AutomationControlled',
-        '--disable-features=VizDisplayCompositor',
-        '--disable-web-security',
-        '--disable-features=site-per-process',
         '--disable-dev-shm-usage',
+        '--disable-gpu',
+        '--disable-software-rasterizer',
+        '--disable-background-networking',
+        '--disable-default-apps',
+        '--disable-extensions',
+        '--disable-sync',
+        '--disable-translate',
+        '--hide-scrollbars',
+        '--metrics-recording-only',
+        '--mute-audio',
         '--no-first-run',
         '--no-default-browser-check',
+        '--no-zygote',
+        '--single-process',
+        '--disable-features=VizDisplayCompositor',
+        '--disable-blink-features=AutomationControlled',
+        '--disable-web-security',
+        '--disable-features=site-per-process',
         '--disable-background-timer-throttling',
         '--disable-backgrounding-occluded-windows',
         '--disable-renderer-backgrounding',
         '--disable-ipc-flooding-protection',
-        '--disable-gpu',
-        '--remote-debugging-port=9222',
+        '--safebrowsing-disable-auto-update',
+        '--ignore-certificate-errors',
+        '--ignore-ssl-errors',
+        '--ignore-certificate-errors-spki-list',
+        '--ignore-certificate-errors-cert-data',
+        '--disable-accelerated-2d-canvas',
+        '--disable-accelerated-jpeg-decoding',
+        '--disable-accelerated-mjpeg-decode',
+        '--disable-accelerated-video-decode',
+        '--disable-gpu-sandbox',
+        '--disable-3d-apis',
+        '--user-data-dir=/app/.chrome-data',
+        `--remote-debugging-port=${debugPort}`,
         '--user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
       ],
       ...(executablePath && { executablePath }),
+      // Explicitly set pipe to false to avoid WebSocket issues
+      pipe: false,
+      // Set dumpio to true to see Chrome's output for debugging
+      dumpio: true,
+      // Set ignoreDefaultArgs to false and handleSIGINT/SIGTERM to false for containers
+      ignoreDefaultArgs: false,
+      handleSIGINT: false,
+      handleSIGTERM: false,
     };
 
+    console.log('🔧 Launch options:', {
+      timeout: launchOptions.timeout,
+      debugPort,
+      pipe: launchOptions.pipe,
+      dumpio: launchOptions.dumpio,
+      argsCount: launchOptions.args.length,
+    });
+
     try {
+      console.log('⏳ Attempting to launch browser...');
       this.browser = await puppeteer.launch(launchOptions);
       console.log('✅ Browser launched successfully');
     } catch (error) {
       console.error('❌ Browser launch failed:', error);
 
-      // Try fallback options
-      console.log('🔄 Trying fallback browser configuration...');
+      // Try fallback options with minimal configuration
+      console.log('🔄 Trying minimal fallback browser configuration...');
+      const fallbackPort = debugPort + 1;
       const fallbackOptions = {
-        ...launchOptions,
         headless: true,
+        timeout: 90000,
         args: [
           '--no-sandbox',
           '--disable-setuid-sandbox',
           '--disable-dev-shm-usage',
           '--disable-gpu',
-          '--remote-debugging-port=9222',
+          '--no-first-run',
+          `--remote-debugging-port=${fallbackPort}`,
         ],
+        ...(executablePath && { executablePath }),
+        pipe: false,
+        dumpio: false, // Disable dumpio in fallback to reduce noise
       };
 
+      console.log('🔧 Fallback options:', {
+        timeout: fallbackOptions.timeout,
+        debugPort: fallbackPort,
+        pipe: fallbackOptions.pipe,
+        dumpio: fallbackOptions.dumpio,
+      });
+
       try {
+        console.log('⏳ Attempting fallback browser launch...');
         this.browser = await puppeteer.launch(fallbackOptions);
         console.log('✅ Browser launched with fallback configuration');
       } catch (fallbackError) {
         console.error('❌ Fallback browser launch also failed:', fallbackError);
-        const errorMessage =
-          error instanceof Error ? error.message : 'Unknown error';
-        throw new Error(`Failed to launch browser: ${errorMessage}`);
+        
+        // Try ultra-minimal configuration as last resort
+        console.log('🔄 Trying ultra-minimal configuration...');
+        const ultraMinimalOptions = {
+          headless: true,
+          timeout: 120000, // Even longer timeout for this attempt
+          args: ['--no-sandbox', '--disable-setuid-sandbox'],
+          ...(executablePath && { executablePath }),
+        };
+
+        try {
+          console.log('⏳ Attempting ultra-minimal browser launch...');
+          this.browser = await puppeteer.launch(ultraMinimalOptions);
+          console.log('✅ Browser launched with ultra-minimal configuration');
+        } catch (ultraMinimalError) {
+          console.error('❌ All browser launch attempts failed');
+          console.error('Original error:', error);
+          console.error('Fallback error:', fallbackError);  
+          console.error('Ultra-minimal error:', ultraMinimalError);
+          
+          const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+          throw new Error(`Failed to launch browser after all attempts: ${errorMessage}`);
+        }
       }
     }
   }
