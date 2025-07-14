@@ -1,0 +1,181 @@
+@layer theme, base, components, utilities;
+
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/preflight.css' layer(base);
+@import 'tailwindcss/utilities.css' layer(utilities);
+
+:root {
+  --background: #0a0a0a;
+  --foreground: #ffffff;
+  --surface: #1a1a1a;
+  --elevated: #2a2a2a;
+  --border: #333333;
+
+  /* Rainbow colors */
+  --rainbow-red: #ff6b6b;
+  --rainbow-orange: #ffa726;
+  --rainbow-yellow: #ffeb3b;
+  --rainbow-green: #66bb6a;
+  --rainbow-blue: #42a5f5;
+  --rainbow-indigo: #7e57c2;
+  --rainbow-purple: #ab47bc;
+  --rainbow-pink: #ec407a;
+
+  /* Neon colors */
+  --neon-cyan: #00ffff;
+  --neon-pink: #ff00ff;
+  --neon-green: #39ff14;
+  --neon-blue: #1e90ff;
+  --neon-purple: #bf00ff;
+  --neon-yellow: #ffff00;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--surface);
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(45deg, var(--rainbow-red), var(--rainbow-blue));
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(
+    45deg,
+    var(--rainbow-purple),
+    var(--rainbow-green)
+  );
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* Rainbow text animation */
+  .rainbow-text {
+    background: linear-gradient(
+      45deg,
+      var(--rainbow-red),
+      var(--rainbow-orange),
+      var(--rainbow-yellow),
+      var(--rainbow-green),
+      var(--rainbow-blue),
+      var(--rainbow-indigo),
+      var(--rainbow-purple)
+    );
+    background-size: 400% 400%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: rainbow-gradient 3s ease infinite;
+  }
+
+  /* Rainbow border animation */
+  .rainbow-border {
+    position: relative;
+    background: var(--surface);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .rainbow-border::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 8px;
+    padding: 2px;
+    background: linear-gradient(
+      45deg,
+      var(--rainbow-red),
+      var(--rainbow-orange),
+      var(--rainbow-yellow),
+      var(--rainbow-green),
+      var(--rainbow-blue),
+      var(--rainbow-indigo),
+      var(--rainbow-purple)
+    );
+    background-size: 400% 400%;
+    animation: rainbow-gradient 3s ease infinite;
+    -webkit-mask: linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: subtract;
+    mask-composite: subtract;
+  }
+
+  /* Glow effects */
+  .glow-red {
+    box-shadow: 0 0 10px var(--rainbow-red), 0 0 20px var(--rainbow-red);
+  }
+
+  .glow-blue {
+    box-shadow: 0 0 10px var(--rainbow-blue), 0 0 20px var(--rainbow-blue);
+  }
+
+  .glow-green {
+    box-shadow: 0 0 10px var(--rainbow-green), 0 0 20px var(--rainbow-green);
+  }
+
+  .glow-purple {
+    box-shadow: 0 0 10px var(--rainbow-purple), 0 0 20px var(--rainbow-purple);
+  }
+
+  /* Hover glow animation */
+  .hover-glow {
+    transition: all 0.3s ease;
+  }
+
+  .hover-glow:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3), 0 0 20px var(--rainbow-blue),
+      0 0 40px var(--rainbow-purple);
+  }
+}
+
+/* Keyframes */
+@keyframes rainbow-gradient {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+/* Selection styling */
+::selection {
+  background: var(--rainbow-purple);
+  color: white;
+}
+
+/* Focus styling */
+*:focus {
+  outline: 2px solid var(--rainbow-blue);
+  outline-offset: 2px;
+}

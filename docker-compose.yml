@@ -1,0 +1,18 @@
+services:
+  watchdog-ts:
+    container_name: watchdog-ts
+    build:
+      context: ./ts
+      dockerfile: Dockerfile
+    ports:
+      - '3080:3000'
+    volumes:
+      - ./ts:/app
+      - node_modules:/app/node_modules
+    environment:
+      - NODE_ENV=development
+    stdin_open: true
+    tty: true
+
+volumes:
+  node_modules:
