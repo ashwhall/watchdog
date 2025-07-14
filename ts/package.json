@@ -31,6 +31,7 @@
     "facebook:test": "npx tsx scripts/test-facebook-implementation.ts",
     "adoptapet:debug": "npx tsx scripts/debug-adoptapet-filters.ts",
     "test-scraper": "npx tsx scripts/test-scraper.ts",
+    "test-puppeteer": "npx tsx scripts/test-puppeteer.ts",
     "telegram:setup": "npx tsx scripts/setup-telegram.ts",
     "telegram:test": "npx tsx scripts/test-telegram.ts",
     "telegram:manage": "npx tsx scripts/manage-telegram.ts",

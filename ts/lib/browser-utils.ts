@@ -1,5 +1,6 @@
 // lib/browser-utils.ts
-import puppeteer, { Browser, Page } from 'puppeteer';
+import puppeteer, { Browser, Page, LaunchOptions } from 'puppeteer';
+import fs from 'fs';
 
 export interface BrowserConfig {
   headless?: boolean;
@@ -10,8 +11,20 @@ export interface BrowserConfig {
 export async function createBrowser(
   config: BrowserConfig = {}
 ): Promise<Browser> {
-  return await puppeteer.launch({
+  // Get Chrome executable path from environment or try to find it
+  const executablePath =
+    process.env.PUPPETEER_EXECUTABLE_PATH ||
+    process.env.CHROME_BIN ||
+    findChromiumExecutable();
+
+  console.log('🚀 Creating browser with config:', {
     headless: config.headless ?? true,
+    executablePath: executablePath || 'default',
+  });
+
+  const launchOptions = {
+    headless: config.headless ?? true,
+    timeout: config.timeout || 60000,
     args: [
       '--no-sandbox',
       '--disable-setuid-sandbox',
@@ -26,6 +39,8 @@ export async function createBrowser(
       '--disable-backgrounding-occluded-windows',
       '--disable-renderer-backgrounding',
       '--disable-ipc-flooding-protection',
+      '--disable-gpu',
+      '--remote-debugging-port=9222',
       '--user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
       // DNS resolution improvements
       '--dns-prefetch-disable',
@@ -33,7 +48,63 @@ export async function createBrowser(
       '--aggressive-cache-discard',
       '--disable-background-networking',
     ],
-  });
+    ...(executablePath && { executablePath }),
+  };
+
+  try {
+    return await puppeteer.launch(launchOptions);
+  } catch (error) {
+    console.error('❌ Browser launch failed:', error);
+
+    // Try fallback options
+    console.log('🔄 Trying fallback browser configuration...');
+    const fallbackOptions = {
+      ...launchOptions,
+      headless: true,
+      args: [
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-dev-shm-usage',
+        '--disable-gpu',
+        '--remote-debugging-port=9222',
+      ],
+    };
+
+    try {
+      return await puppeteer.launch(fallbackOptions);
+    } catch (fallbackError) {
+      console.error('❌ Fallback browser launch also failed:', fallbackError);
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+      throw new Error(`Failed to launch browser: ${errorMessage}`);
+    }
+  }
+}
+
+function findChromiumExecutable(): string | undefined {
+  const possiblePaths = [
+    '/usr/bin/google-chrome-stable',
+    '/usr/bin/google-chrome',
+    '/usr/bin/chromium',
+    '/usr/bin/chromium-browser',
+    '/snap/bin/chromium',
+    '/usr/bin/chrome',
+    '/opt/google/chrome/chrome',
+  ];
+
+  for (const path of possiblePaths) {
+    try {
+      if (fs.existsSync(path)) {
+        console.log(`🔍 Found Chrome/Chromium at: ${path}`);
+        return path;
+      }
+    } catch {
+      // Continue to next path
+    }
+  }
+
+  console.log('⚠️  No Chrome/Chromium executable found in common locations');
+  return undefined;
 }
 
 export async function setupAntiDetection(page: Page): Promise<void> {

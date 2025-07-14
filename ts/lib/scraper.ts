@@ -24,8 +24,18 @@ export class DogScraper {
   }
 
   async init(): Promise<void> {
-    this.browser = await puppeteer.launch({
+    // Get Chrome executable path from environment or try to find it
+    const executablePath =
+      process.env.PUPPETEER_EXECUTABLE_PATH || process.env.CHROME_BIN;
+
+    console.log('🚀 Launching browser with config:', {
       headless: this.config.headless,
+      executablePath: executablePath || 'default',
+    });
+
+    const launchOptions = {
+      headless: this.config.headless,
+      timeout: 60000, // Increase timeout to 60 seconds
       args: [
         '--no-sandbox',
         '--disable-setuid-sandbox',
@@ -40,9 +50,43 @@ export class DogScraper {
         '--disable-backgrounding-occluded-windows',
         '--disable-renderer-backgrounding',
         '--disable-ipc-flooding-protection',
+        '--disable-gpu',
+        '--remote-debugging-port=9222',
         '--user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
       ],
-    });
+      ...(executablePath && { executablePath }),
+    };
+
+    try {
+      this.browser = await puppeteer.launch(launchOptions);
+      console.log('✅ Browser launched successfully');
+    } catch (error) {
+      console.error('❌ Browser launch failed:', error);
+
+      // Try fallback options
+      console.log('🔄 Trying fallback browser configuration...');
+      const fallbackOptions = {
+        ...launchOptions,
+        headless: true,
+        args: [
+          '--no-sandbox',
+          '--disable-setuid-sandbox',
+          '--disable-dev-shm-usage',
+          '--disable-gpu',
+          '--remote-debugging-port=9222',
+        ],
+      };
+
+      try {
+        this.browser = await puppeteer.launch(fallbackOptions);
+        console.log('✅ Browser launched with fallback configuration');
+      } catch (fallbackError) {
+        console.error('❌ Fallback browser launch also failed:', fallbackError);
+        const errorMessage =
+          error instanceof Error ? error.message : 'Unknown error';
+        throw new Error(`Failed to launch browser: ${errorMessage}`);
+      }
+    }
   }
 
   async close(): Promise<void> {

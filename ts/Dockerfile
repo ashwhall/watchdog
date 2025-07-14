@@ -29,14 +29,29 @@ RUN apt-get update && apt-get install -y \
     libdrm2 \
     libxss1 \
     libgconf-2-4 \
-    chromium \
+    libxcomposite1 \
+    libxdamage1 \
+    libxrandr2 \
+    libxss1 \
+    libxtst6 \
+    libnss3 \
+    libxshmfence1 \
+    libglu1-mesa \
     python3 \
     make \
     g++ \
     && rm -rf /var/lib/apt/lists/*
 
-# Set Puppeteer to use system-installed Chromium
+# Install Google Chrome instead of Chromium for better compatibility
+RUN wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add - \
+    && echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list \
+    && apt-get update \
+    && apt-get install -y google-chrome-stable \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set Puppeteer to use system-installed Chrome
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable
 
 # Set working directory
 WORKDIR /app
@@ -63,17 +78,29 @@ RUN echo '#!/bin/bash\n\
     npm install better-sqlite3 --build-from-source\n\
     fi\n\
     \n\
-    # Set Chromium executable path based on what is available\n\
-    if [ -f "/usr/bin/chromium" ]; then\n\
-    export PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium\n\
-    elif [ -f "/usr/bin/chromium-browser" ]; then\n\
-    export PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser\n\
+    # Set Chrome/Chromium executable path and test it\n\
+    echo "🔍 Detecting Chrome/Chromium installation..."\n\
+    if [ -f "/usr/bin/google-chrome-stable" ]; then\n\
+    export PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable\n\
+    echo "✅ Found Google Chrome Stable: $PUPPETEER_EXECUTABLE_PATH"\n\
     elif [ -f "/usr/bin/google-chrome" ]; then\n\
     export PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome\n\
-    elif [ -f "/usr/bin/google-chrome-stable" ]; then\n\
-    export PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable\n\
+    echo "✅ Found Google Chrome: $PUPPETEER_EXECUTABLE_PATH"\n\
+    elif [ -f "/usr/bin/chromium" ]; then\n\
+    export PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium\n\
+    echo "✅ Found Chromium: $PUPPETEER_EXECUTABLE_PATH"\n\
+    elif [ -f "/usr/bin/chromium-browser" ]; then\n\
+    export PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser\n\
+    echo "✅ Found Chromium Browser: $PUPPETEER_EXECUTABLE_PATH"\n\
     else\n\
-    echo "Warning: No system Chromium/Chrome found, Puppeteer may fail"\n\
+    echo "❌ No Chrome/Chromium found! Available browsers:"\n\
+    ls -la /usr/bin/ | grep -E "(chrome|chromium)" || echo "None found"\n\
+    fi\n\
+    \n\
+    # Test Chrome executable\n\
+    if [ ! -z "$PUPPETEER_EXECUTABLE_PATH" ] && [ -f "$PUPPETEER_EXECUTABLE_PATH" ]; then\n\
+    echo "🧪 Testing Chrome executable..."\n\
+    $PUPPETEER_EXECUTABLE_PATH --version || echo "⚠️  Chrome test failed but continuing..."\n\
     fi\n\
     \n\
     # Ensure drizzle directory structure exists\n\
