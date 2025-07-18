@@ -2,6 +2,8 @@
 
 Scrapes dog adoption listings from a collection of websites and Facebook pages/groups in order. This was built for a pretty specific purpose and tested on a single Ubuntu machine, so I can make no guarantees about its stability.
 
+_Since writing the above, I had Claude (in VS Code Agent mode) rewrite the code in TypeScript, which is now the recommended version. The Python version is still available but is no longer maintained._
+
 ## Features
 
 - 🔍 **Automated Scraping**: Regularly scrapes multiple dog adoption websites
