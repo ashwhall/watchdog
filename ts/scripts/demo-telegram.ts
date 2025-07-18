@@ -1,6 +1,7 @@
 // scripts/demo-telegram.ts
 import { DogScraper } from '../lib/scraper';
 import { telegramNotifier } from '../lib/telegram-notifier';
+import { sendQueuedTelegramNotifications } from '../lib/scraper-utils';
 
 async function demoTelegramNotifications() {
   console.log('🐕 Telegram Notification Demo\n');
@@ -32,7 +33,10 @@ async function demoTelegramNotifications() {
     console.log(`\n🎉 Demo completed!`);
     console.log(`Found ${saved} new dogs`);
 
+    // Send queued notifications at the end
     if (saved > 0) {
+      console.log('\n📱 Sending queued Telegram notifications...');
+      await sendQueuedTelegramNotifications();
       console.log('Check your Telegram chat for notifications! 📱');
     } else {
       console.log(

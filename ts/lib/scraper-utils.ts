@@ -12,6 +12,9 @@ export interface ScrapedDog {
   description?: string;
 }
 
+// Queue for batch notifications
+let notificationQueue: (typeof dogs.$inferSelect)[] = [];
+
 export async function saveDogs(
   scrapedDogs: ScrapedDog[],
   sendNotifications = true
@@ -66,19 +69,69 @@ export async function saveDogs(
 
   console.log(`📊 SCRAPE SUMMARY: ${saved} new dogs, ${duplicates} duplicates`);
 
-  // Send Telegram notifications for new dogs ONLY
+  // Store new dogs in a queue for batch notifications instead of sending immediately
   if (sendNotifications && newDogs.length > 0) {
     console.log(
-      `🔔 Sending Telegram notifications for ${newDogs.length} new dogs...`
+      `🔔 Queuing ${newDogs.length} new dogs for batch notifications...`
     );
-    await sendTelegramNotifications(newDogs);
+    queueTelegramNotifications(newDogs);
   } else if (sendNotifications && newDogs.length === 0) {
-    console.log(`🔕 No new dogs found - no notifications sent`);
+    console.log(`🔕 No new dogs found - no notifications to queue`);
   }
 
   return saved;
 }
 
+function queueTelegramNotifications(
+  newDogs: (typeof dogs.$inferSelect)[]
+): void {
+  notificationQueue.push(...newDogs);
+  console.log(`📤 Added ${newDogs.length} dogs to notification queue (total: ${notificationQueue.length})`);
+}
+
+export async function sendQueuedTelegramNotifications(): Promise<void> {
+  if (notificationQueue.length === 0) {
+    console.log('🔕 No queued notifications to send');
+    return;
+  }
+
+  console.log(`🔔 Sending ${notificationQueue.length} queued Telegram notifications...`);
+  
+  try {
+    // Initialize telegram notifier if not already done
+    const initialized = await telegramNotifier.init();
+    if (!initialized) {
+      console.log('Telegram notifications not configured, skipping');
+      return;
+    }
+
+    // Send individual notifications for each new dog with 500ms delays
+    for (let i = 0; i < notificationQueue.length; i++) {
+      const dog = notificationQueue[i];
+      await telegramNotifier.notifyNewDog(dog);
+      console.log(`📱 Sent notification ${i + 1}/${notificationQueue.length} for: ${dog.name}`);
+      
+      // Wait 500ms between messages to avoid rate limiting
+      if (i < notificationQueue.length - 1) {
+        await new Promise((resolve) => setTimeout(resolve, 500));
+      }
+    }
+
+    // Send a summary notification if multiple dogs were found
+    if (notificationQueue.length > 1) {
+      await telegramNotifier.notifyBatchResults(notificationQueue.length);
+    }
+
+    console.log(`✅ Successfully sent ${notificationQueue.length} Telegram notifications`);
+  } catch (error) {
+    console.error('Error sending queued Telegram notifications:', error);
+  } finally {
+    // Clear the queue after sending
+    notificationQueue = [];
+  }
+}
+
+// Legacy function for backward compatibility (now unused)
 async function sendTelegramNotifications(
   newDogs: (typeof dogs.$inferSelect)[]
 ): Promise<void> {

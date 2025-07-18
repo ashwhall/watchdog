@@ -2,6 +2,7 @@
 import puppeteer from 'puppeteer';
 import { DogScraper } from '../lib/scraper';
 import { FacebookScraper } from '../lib/facebook-scraper';
+import { sendQueuedTelegramNotifications } from '../lib/scraper-utils';
 
 interface ScrapingOptions {
   facebookOnly?: boolean;
@@ -92,6 +93,12 @@ async function scrapeAll(options: ScrapingOptions = {}) {
     console.log(
       `⏱️  Total time: ${((Date.now() - startTime) / 1000).toFixed(1)}s`
     );
+
+    // Send all queued Telegram notifications at the end
+    if (results.total > 0) {
+      console.log('\n📱 Sending queued Telegram notifications...');
+      await sendQueuedTelegramNotifications();
+    }
   } catch (error) {
     console.error('❌ Error during scraping:', error);
   } finally {

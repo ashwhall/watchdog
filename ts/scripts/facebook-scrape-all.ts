@@ -2,6 +2,7 @@
 import { createBrowser } from '../lib/browser-utils';
 import { FacebookScraper } from '../lib/facebook-scraper';
 import { getFacebookCredentials } from '../lib/settings';
+import { sendQueuedTelegramNotifications } from '../lib/scraper-utils';
 
 async function facebookScrapeAll() {
   console.log('🐕 Starting comprehensive Facebook dog scraping...');
@@ -32,6 +33,12 @@ async function facebookScrapeAll() {
       const duration = ((Date.now() - startTime) / 1000).toFixed(1);
       console.log(`🎉 Facebook scraping completed in ${duration}s`);
       console.log(`📊 Total new dogs saved: ${dogsFound}`);
+
+      // Send all queued Telegram notifications at the end
+      if (dogsFound > 0) {
+        console.log('\n📱 Sending queued Telegram notifications...');
+        await sendQueuedTelegramNotifications();
+      }
 
       return dogsFound;
     } finally {

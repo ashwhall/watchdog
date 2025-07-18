@@ -1,6 +1,7 @@
 // lib/simple-scheduler.ts
 import { runScraping } from './scraper';
 import { getScrapeInterval } from './settings';
+import { sendQueuedTelegramNotifications } from './scraper-utils';
 
 export class SimpleScheduler {
   private intervalId: NodeJS.Timeout | null = null;
@@ -30,6 +31,12 @@ export class SimpleScheduler {
           0
         );
         console.log(`Scheduled scraping completed: ${total} dogs scraped`);
+        
+        // Send queued notifications after scraping
+        if (total > 0) {
+          console.log('📱 Sending queued Telegram notifications...');
+          await sendQueuedTelegramNotifications();
+        }
       } catch (error) {
         console.error('Scheduled scraping failed:', error);
       }
@@ -46,6 +53,12 @@ export class SimpleScheduler {
         0
       );
       console.log(`Initial scraping completed: ${total} dogs scraped`);
+      
+      // Send queued notifications after initial scraping
+      if (total > 0) {
+        console.log('📱 Sending queued Telegram notifications...');
+        await sendQueuedTelegramNotifications();
+      }
     } catch (error) {
       console.error('Initial scraping failed:', error);
     }

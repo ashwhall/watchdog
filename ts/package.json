@@ -37,6 +37,7 @@
     "telegram:test": "npx tsx scripts/test-telegram.ts",
     "telegram:manage": "npx tsx scripts/manage-telegram.ts",
     "telegram:demo": "npx tsx scripts/demo-telegram.ts",
+    "telegram:test-batch": "npx tsx scripts/test-batch-notifications.ts",
     "init": "npx tsx scripts/init-system.ts",
     "all": "npm run dev:full"
   },
