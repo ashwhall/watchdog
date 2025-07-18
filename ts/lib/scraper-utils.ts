@@ -117,10 +117,8 @@ export async function sendQueuedTelegramNotifications(): Promise<void> {
       }
     }
 
-    // Send a summary notification if multiple dogs were found
-    if (notificationQueue.length > 1) {
-      await telegramNotifier.notifyBatchResults(notificationQueue.length);
-    }
+    // Send a summary notification
+    await telegramNotifier.notifyBatchResults(notificationQueue.length);
 
     console.log(`✅ Successfully sent ${notificationQueue.length} Telegram notifications`);
   } catch (error) {
@@ -131,30 +129,3 @@ export async function sendQueuedTelegramNotifications(): Promise<void> {
   }
 }
 
-// Legacy function for backward compatibility (now unused)
-async function sendTelegramNotifications(
-  newDogs: (typeof dogs.$inferSelect)[]
-): Promise<void> {
-  try {
-    // Initialize telegram notifier if not already done
-    const initialized = await telegramNotifier.init();
-    if (!initialized) {
-      console.log('Telegram notifications not configured, skipping');
-      return;
-    }
-
-    // Send individual notifications for each new dog
-    for (const dog of newDogs) {
-      await telegramNotifier.notifyNewDog(dog);
-      // Small delay between messages to avoid rate limiting
-      await new Promise((resolve) => setTimeout(resolve, 100));
-    }
-
-    // Send a summary notification if multiple dogs were found
-    if (newDogs.length > 1) {
-      await telegramNotifier.notifyBatchResults(newDogs.length);
-    }
-  } catch (error) {
-    console.error('Error sending Telegram notifications:', error);
-  }
-}

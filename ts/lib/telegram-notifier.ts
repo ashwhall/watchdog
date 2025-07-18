@@ -82,10 +82,12 @@ export class TelegramNotifier {
       return false;
     }
 
+    const plural = savedCount === 1 ? '' : 's';
+
     try {
       const message =
         `🐕 *Watchdog Update*\n\n` +
-        `Found *${savedCount}* new dogs.\n\n` +
+        `Found *${savedCount}* new dog${plural}.\n\n` +
         `Check the app for more details!`;
 
       await this.bot.sendMessage(this.chatId, message, {
