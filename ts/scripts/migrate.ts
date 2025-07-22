@@ -22,7 +22,13 @@ async function ensureJournalExists() {
     const journalContent = {
       version: '7',
       dialect: 'sqlite',
-      entries: [],
+      entries: [] as Array<{
+        idx: number;
+        version: string;
+        when: number;
+        tag: string;
+        breakpoints: boolean;
+      }>,
     };
 
     // Check for existing migration files and add them to journal

@@ -43,15 +43,23 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Google Chrome instead of Chromium for better compatibility
-RUN wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add - \
-    && echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list \
-    && apt-get update \
-    && apt-get install -y google-chrome-stable \
-    && rm -rf /var/lib/apt/lists/*
+# Detect architecture and install appropriate browser
+RUN ARCH=$(dpkg --print-architecture) && \
+    if [ "$ARCH" = "amd64" ]; then \
+        wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add - && \
+        echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list && \
+        apt-get update && \
+        apt-get install -y google-chrome-stable; \
+    else \
+        echo "Installing Chromium for non-amd64 architecture ($ARCH)" && \
+        apt-get update && \
+        apt-get install -y chromium; \
+    fi && \
+    rm -rf /var/lib/apt/lists/*
 
-# Set Puppeteer to use system-installed Chrome
+# Set Puppeteer to use system-installed Chrome/Chromium
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
-ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable
+# The entrypoint script will set PUPPETEER_EXECUTABLE_PATH based on what's available
 
 # Create a user to run Chrome (Chrome doesn't like running as root)
 RUN groupadd -r appuser && useradd -r -g appuser -G audio,video appuser \
