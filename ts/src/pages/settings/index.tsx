@@ -642,10 +642,8 @@ export default function Settings() {
                         />
                         <p className="mt-1 text-sm text-dark-text-secondary">
                           Your personal chat ID or group chat ID. Send a message
-                          to your bot first, then visit:
-                          <code className="bg-dark-elevated px-1 rounded text-xs text-rainbow-cyan ml-1">
-                            https://api.telegram.org/bot&lt;YOUR_BOT_TOKEN&gt;/getUpdates
-                          </code>
+                          to your bot first, then visit Telegram on the web, search for 'Saved Messages' to open the chat
+                          with yourself, then copy the chat ID from the URL.
                         </p>
                       </div>
                     </>
